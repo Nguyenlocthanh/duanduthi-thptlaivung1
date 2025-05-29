@@ -1,1 +1,477 @@
+<!DOCTYPE html>
+<html class="h-full bg-gray-100">
+<head>
+  <base target="_top">
+  <title>Ứng dụng Giải Toán &amp; Trắc Nghiệm</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: {
+        fontCache: 'global'
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    /* Thêm font Inter từ Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-size: 16px; /* Kích thước chữ cơ bản cho mobile */
+    }
+    @media (min-width: 640px) { /* sm breakpoint */
+      body {
+        font-size: 16px; /* Có thể giữ nguyên hoặc tăng nhẹ nếu muốn */
+      }
+    }
+
+    /* Kiểu cho spinner */
+    .loader {
+      border: 5px solid #f3f3f3; /* Light grey */
+      border-top: 5px solid #3498db; /* Blue */
+      border-radius: 50%;
+      width: 30px; /* Nhỏ hơn một chút cho mobile */
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 15px auto;
+    }
+      @media (min-width: 640px) {
+        .loader {
+            width: 40px;
+            height: 40px;
+            margin: 20px auto;
+        }
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    textarea, select {
+        border-color: #D1D5DB; /* gray-300 */
+        font-size: 1rem; /* 16px */
+    }
+    textarea:focus, select:focus {
+        border-color: #3B82F6; /* blue-500 */
+        box-shadow: 0 0 0 2px #BFDBFE; /* blue-200 */
+    }
+    .custom-button {
+        transition: all 0.15s ease-in-out;
+        font-size: 0.95rem; /* Điều chỉnh kích thước chữ nút */
+    }
+      @media (min-width: 640px) {
+        .custom-button {
+            font-size: 1rem;
+        }
+    }
+    .custom-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .custom-button:active {
+        transform: translateY(0px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .quiz-option {
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+        font-size: 0.9rem;
+    }
+    @media (min-width: 640px) {
+        .quiz-option {
+            font-size: 1rem;
+        }
+    }
+    .quiz-option:hover {
+        background-color: #eff6ff; /* blue-50 */
+    }
+    .quiz-option.selected {
+        background-color: #dbeafe; /* blue-200 */
+        border-color: #3b82f6; /* blue-500 */
+    }
+    .quiz-option.correct {
+        background-color: #dcfce7; /* green-100 */
+        border-color: #22c55e; /* green-500 */
+        color: #166534; /* green-800 */
+    }
+    .quiz-option.incorrect {
+        background-color: #fee2e2; /* red-100 */
+        border-color: #ef4444; /* red-500 */
+        color: #991b1b; /* red-800 */
+    }
+    mjx-container {
+        overflow-x: auto;
+        overflow-y: hidden;
+        max-width: 100%;
+        font-size: 1.1em; /* Tăng kích thước chữ của MathJax một chút */
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col text-gray-800 bg-gray-100">
+
+  <div id="appContainer" class="w-full h-full flex flex-col">
+    <header class="bg-blue-600 text-white p-3 shadow-md sticky top-0 z-20">
+      <h1 class="text-lg sm:text-xl font-bold text-center">Ứng Dụng Giải Toán &amp; Trắc Nghiệm</h1>
+      <p class="text-center text-blue-100 text-xs mt-0.5">Nhập bài toán, tải ảnh, nhận lời giải và thử sức!</p>
+    </header>
+
+    <main id="mainContentArea" class="flex-grow overflow-y-auto p-3 space-y-4">
+      <div class="bg-white p-4 rounded-lg shadow-md">
+        <h2 class="text-base sm:text-lg font-semibold mb-3 text-blue-700">NHẬP BÀI TOÁN CỦA BẠN</h2>
+        
+        <div class="mb-4">
+          <label for="problemText" class="block text-sm font-medium text-gray-700 mb-1"></label>
+
+          <label for="problemText" class="block text-sm font-medium text-gray-700 mb-1">Hãy đặt câu hỏi để khám phá thế giới toán học sâu sắc hơn! Mỗi thắc mắc bạn gửi gắm không chỉ giúp bạn mở rộng hiểu biết mà còn là nguồn dữ liệu quý giá, góp phần làm phong phú thêm dự án học tập này.</label>
+
+
+          <textarea id="problemText" rows="4" class="w-full p-2.5 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+        </div>
+
+        <div class="mb-4">
+          <label for="imageUpload" class="block text-sm font-medium text-gray-700 mb-1">Bạn đã có thể tải hình ảnh lên:</label>
+
+          <p class="text-xs text-gray-500 mb-1">Xin lưu ý, vì tính năng chụp ảnh trực tiếp hiện chưa được hỗ trợ, bạn vui lòng sử dụng thiết bị của mình để chụp ảnh trước, sau đó tải tệp đã chụp lên.</p>
+
+
+          <input type="file" id="imageUpload" accept="image/png, image/jpeg, image/gif, image/webp" class="w-full text-sm text-gray-500
+            file:mr-2 file:py-2 file:px-3
+            file:rounded-full file:border-0
+            file:text-xs file:font-semibold
+            file:bg-blue-50 file:text-blue-700
+            hover:file:bg-blue-100
+          "/>
+          <div id="imagePreviewContainer" class="mt-2">
+              <img id="imagePreview" src="#" alt="Xem trước ảnh" class="hidden max-w-[180px] sm:max-w-xs max-h-40 sm:max-h-48 rounded border p-1"/>
+              <button id="removeImageBtn" class="hidden mt-1 text-xs text-red-500 hover:text-red-700">Xóa ảnh</button>
+          </div>
+        </div>
+
+        <div class="mb-5">
+          <label for="detailLevel" class="block text-sm font-medium text-gray-700 mb-1">Mức độ chi tiết lời giải:</label>
+          <select id="detailLevel" class="w-full p-2.5 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <option value="result_only">Tập trung kết quả</option>
+            <option value="explanation">Ưu tiên giải thích</option>
+            <option value="advanced_detailed">Giải thích chi tiết và nâng cao</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col space-y-3">
+          <button id="solveBtn" class="custom-button w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+            Giải &amp; Tạo Trắc Nghiệm
+          </button>
+          <button id="logToSheetBtn" class="custom-button w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+            Lưu Trắc Nghiệm vào Sheet
+          </button>
+        </div>
+      </div>
+
+      <div id="resultParentContainer" class="space-y-4">
+          <div id="resultArea" class="bg-white p-4 rounded-lg shadow-md">
+            <h2 class="text-base sm:text-lg font-semibold mb-2 text-blue-700">Lời giải:</h2>
+            <div id="loadingSpinnerSolution" class="loader hidden"></div>
+            <div id="statusMessageSolution" class="text-sm text-gray-600 mb-2"></div>
+            <div id="solutionText" class="text-sm sm:text-base max-w-none bg-gray-50 p-3 rounded-md border border-gray-200 overflow-x-auto"></div>
+          </div>
+
+          <div id="quizArea" class="bg-white p-4 rounded-lg shadow-md hidden">
+              <h2 class="text-base sm:text-lg font-semibold mb-3 text-purple-700">Câu hỏi trắc nghiệm:</h2>
+              <div id="loadingSpinnerQuiz" class="loader hidden"></div>
+              <div id="statusMessageQuiz" class="text-sm text-gray-600 mb-2"></div>
+              
+              <div id="quizContent" class="hidden">
+                  <div id="quizQuestionText" class="text-sm sm:text-base max-w-none font-medium mb-3"></div>
+                  <div id="quizOptionsContainer" class="space-y-2 mb-3">
+                  </div>
+                  <div class="mb-3 text-xs text-gray-700">
+                      <p><strong>Độ khó:</strong> <span id="quizDifficultyText">-</span></p>
+                      <p><strong>Lớp:</strong> <span id="quizGradeLevelText">-</span></p>
+                  </div>
+                  <button id="checkQuizAnswerBtn" class="custom-button bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2.5 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50">
+                      Kiểm tra đáp án
+                  </button>
+                  <div id="quizResultArea" class="mt-3">
+                      <p id="quizResultText" class="text-sm"></p>
+                      <div id="quizExplanationText" class="text-xs sm:text-sm max-w-none mt-1 p-2.5 bg-yellow-50 border border-yellow-200 rounded-md hidden"></div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </main>
+
+    <footer class="text-center text-xs text-gray-500 py-2 border-t border-gray-300 bg-gray-50">
+     <p>&copy; <span id="currentYear"></span> - Ứng dụng đang phát triển dự thi " Huỳnh Gia Bảo - Lý Ngọc An". </p>
+      <p class="text-xs mt-0.5">Lưu ý: Kết quả chỉ mang tính tham khảo.</p>
+    </footer>
+  </div>
+
+  <script>
+    const problemTextEl = document.getElementById('problemText');
+    const imageUploadEl = document.getElementById('imageUpload');
+    const imagePreviewEl = document.getElementById('imagePreview');
+    const removeImageBtnEl = document.getElementById('removeImageBtn');
+    const detailLevelEl = document.getElementById('detailLevel');
+    const solveBtn = document.getElementById('solveBtn');
+    const logToSheetBtn = document.getElementById('logToSheetBtn');
+
+    const solutionTextEl = document.getElementById('solutionText');
+    const loadingSpinnerSolutionEl = document.getElementById('loadingSpinnerSolution');
+    const statusMessageSolutionEl = document.getElementById('statusMessageSolution');
+    
+    const quizAreaEl = document.getElementById('quizArea');
+    const loadingSpinnerQuizEl = document.getElementById('loadingSpinnerQuiz');
+    const statusMessageQuizEl = document.getElementById('statusMessageQuiz');
+    const quizContentEl = document.getElementById('quizContent');
+    const quizQuestionTextEl = document.getElementById('quizQuestionText');
+    const quizOptionsContainerEl = document.getElementById('quizOptionsContainer');
+    const quizDifficultyTextEl = document.getElementById('quizDifficultyText');
+    const quizGradeLevelTextEl = document.getElementById('quizGradeLevelText');
+    const checkQuizAnswerBtnEl = document.getElementById('checkQuizAnswerBtn');
+    const quizResultTextEl = document.getElementById('quizResultText');
+    const quizExplanationTextEl = document.getElementById('quizExplanationText');
+
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+    detailLevelEl.value = 'result_only';
+
+    let currentProblemDescription = ''; 
+    let currentSolutionText = '';
+    let currentQuizData = null; 
+    let imageBase64 = null; 
+    let imageMimeType = null;
+    let selectedQuizOptionKey = null;
+
+    function typesetMath(elements) {
+      if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+        try {
+          const elementsToTypeset = Array.isArray(elements) ? elements : [elements];
+          if (elementsToTypeset.length > 0) {
+            window.MathJax.typesetPromise(elementsToTypeset).catch(function (err) {
+              console.error('MathJax typesetting error: ' + err.message, err);
+            });
+          }
+        } catch (e) {
+          console.error('Error calling MathJax: ' + e.message, e);
+        }
+      }
+    }
+
+    imageUploadEl.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          imagePreviewEl.src = e.target.result;
+          imagePreviewEl.classList.remove('hidden');
+          removeImageBtnEl.classList.remove('hidden');
+          imageBase64 = e.target.result.split(',')[1]; 
+          imageMimeType = file.type; 
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+
+    removeImageBtnEl.addEventListener('click', function() {
+        imageUploadEl.value = ''; 
+        imagePreviewEl.src = '#';
+        imagePreviewEl.classList.add('hidden');
+        removeImageBtnEl.classList.add('hidden');
+        imageBase64 = null;
+        imageMimeType = null;
+    });
+
+    solveBtn.addEventListener('click', function() {
+      const problemText = problemTextEl.value.trim();
+      const detailLevel = detailLevelEl.value; 
+
+      if (!problemText && !imageBase64) {
+        setStatusMessage(statusMessageSolutionEl, 'Vui lòng nhập bài toán hoặc tải ảnh lên.', 'error');
+        return;
+      }
+
+      currentProblemDescription = problemText ? `Văn bản: "${problemText}"` : "BÀI TOÁN TỪ ẢNH";
+      if (imageBase64 && problemText) currentProblemDescription = `Văn bản: "${problemText}" KÈM THEO ẢNH`;
+      else if (imageBase64) currentProblemDescription = "BÀI TOÁN TỪ ẢNH";
+      else currentProblemDescription = problemText;
+      
+      showLoading(loadingSpinnerSolutionEl, true, "Đang xử lý bài toán và tạo trắc nghiệm...");
+      solutionTextEl.innerHTML = '';
+      quizAreaEl.classList.add('hidden');
+      quizContentEl.classList.add('hidden');
+      quizOptionsContainerEl.innerHTML = '';
+      quizResultTextEl.innerHTML = '';
+      quizExplanationTextEl.innerHTML = '';
+      quizExplanationTextEl.classList.add('hidden');
+      quizDifficultyTextEl.textContent = '-';
+      quizGradeLevelTextEl.textContent = '-';
+      setStatusMessage(statusMessageSolutionEl, '', 'info');
+      setStatusMessage(statusMessageQuizEl, '', 'info');
+      currentSolutionText = '';
+      currentQuizData = null;
+      selectedQuizOptionKey = null;
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          showLoading(loadingSpinnerSolutionEl, false);
+          if (response.error) {
+            solutionTextEl.textContent = 'Lỗi: ' + response.error;
+            setStatusMessage(statusMessageSolutionEl, 'Xảy ra lỗi khi giải bài toán.', 'error');
+            currentSolutionText = 'Lỗi: ' + response.error;
+            return;
+          }
+
+          currentSolutionText = response.solution || "Không có lời giải.";
+          solutionTextEl.innerHTML = currentSolutionText; 
+          typesetMath([solutionTextEl]);
+          setStatusMessage(statusMessageSolutionEl, 'Đã nhận được lời giải!', 'success');
+
+          if (response.quiz && response.quiz.question && response.quiz.quizId) { 
+            currentQuizData = response.quiz;
+            displayQuiz(currentQuizData);
+          } else if (response.quiz && response.quiz.error) {
+            setStatusMessage(statusMessageQuizEl, 'Lỗi tạo trắc nghiệm: ' + response.quiz.error + (response.quiz.details ? ` (${response.quiz.details.substring(0,100)}...)` : ''), 'error');
+            quizAreaEl.classList.remove('hidden'); 
+          } else {
+              setStatusMessage(statusMessageQuizEl, 'Không tạo được câu hỏi trắc nghiệm cho bài toán này hoặc thiếu thông tin quiz.', 'info');
+              quizAreaEl.classList.remove('hidden');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showLoading(loadingSpinnerSolutionEl, false);
+          solutionTextEl.textContent = 'Lỗi: ' + error.message; 
+          setStatusMessage(statusMessageSolutionEl, 'Xảy ra lỗi nghiêm trọng khi xử lý.', 'error');
+          currentSolutionText = 'Lỗi: ' + error.message;
+          console.error("Lỗi từ server: ", error);
+        })
+        .processProblem({ problemText: problemText, imageBase64: imageBase64, detailLevel: detailLevel, mimeType: imageMimeType });
+    });
+
+    function displayQuiz(quizData) {
+        quizAreaEl.classList.remove('hidden');
+        quizContentEl.classList.remove('hidden');
+        showLoading(loadingSpinnerQuizEl, false); 
+        setStatusMessage(statusMessageQuizEl, 'Đã tạo câu hỏi trắc nghiệm!', 'success');
+
+        quizQuestionTextEl.innerHTML = quizData.question; 
+        quizDifficultyTextEl.textContent = quizData.difficulty || 'Không xác định';
+        quizGradeLevelTextEl.textContent = quizData.gradeLevel || 'Không xác định';
+        quizOptionsContainerEl.innerHTML = ''; 
+
+        const elementsToTypesetInQuiz = [quizQuestionTextEl];
+
+        ['A', 'B', 'C', 'D'].forEach(key => {
+            if (quizData.options && quizData.options[key]) {
+                const optionDiv = document.createElement('div');
+                optionDiv.classList.add('quiz-option', 'p-2.5', 'border', 'border-gray-300', 'rounded-md', 'hover:bg-gray-50');
+                optionDiv.innerHTML = `<span class="font-semibold">${key}.</span> ${quizData.options[key]}`; 
+                optionDiv.dataset.key = key;
+                optionDiv.addEventListener('click', function() {
+                    document.querySelectorAll('#quizOptionsContainer .quiz-option').forEach(opt => opt.classList.remove('selected', 'correct', 'incorrect'));
+                    this.classList.add('selected');
+                    selectedQuizOptionKey = key;
+                    quizResultTextEl.innerHTML = '';
+                    quizExplanationTextEl.innerHTML = '';
+                    quizExplanationTextEl.classList.add('hidden');
+                });
+                quizOptionsContainerEl.appendChild(optionDiv);
+                elementsToTypesetInQuiz.push(optionDiv);
+            }
+        });
+        typesetMath(elementsToTypesetInQuiz);
+    }
+    
+    checkQuizAnswerBtnEl.addEventListener('click', function() {
+        if (!selectedQuizOptionKey || !currentQuizData) {
+            quizResultTextEl.textContent = "Vui lòng chọn một đáp án.";
+            quizResultTextEl.className = "text-sm text-yellow-600";
+            return;
+        }
+
+        const isCorrect = selectedQuizOptionKey === currentQuizData.correctAnswerKey;
+        const optionsDivs = document.querySelectorAll('#quizOptionsContainer .quiz-option');
+
+        optionsDivs.forEach(optDiv => {
+            optDiv.classList.remove('selected'); 
+            if (optDiv.dataset.key === currentQuizData.correctAnswerKey) {
+                optDiv.classList.add('correct');
+            } else if (optDiv.dataset.key === selectedQuizOptionKey && !isCorrect) {
+                optDiv.classList.add('incorrect');
+            }
+        });
+
+        if (isCorrect) {
+            quizResultTextEl.innerHTML = "Chính xác! 🎉"; 
+            quizResultTextEl.className = "text-sm font-semibold text-green-600";
+        } else {
+            quizResultTextEl.innerHTML = `Không chính xác. Đáp án đúng là <span class="font-bold">${currentQuizData.correctAnswerKey}</span>.`; 
+            quizResultTextEl.className = "text-sm font-semibold text-red-600";
+        }
+        quizExplanationTextEl.innerHTML = `<strong>Giải thích:</strong> ${currentQuizData.explanation || 'Không có giải thích.'}`; 
+        quizExplanationTextEl.classList.remove('hidden');
+        typesetMath([quizResultTextEl, quizExplanationTextEl]);
+    });
+
+    logToSheetBtn.addEventListener('click', function() {
+      if (!currentQuizData || !currentQuizData.quizId) { 
+          setStatusMessage(statusMessageQuizEl, 'Không có dữ liệu trắc nghiệm hợp lệ để lưu. Vui lòng tạo trắc nghiệm trước.', 'warning');
+          return;
+      }
+      
+      showLoading(loadingSpinnerSolutionEl, true, "Đang lưu trắc nghiệm vào Google Sheet..."); 
+
+      google.script.run
+        .withSuccessHandler(function(message) {
+          showLoading(loadingSpinnerSolutionEl, false);
+          setStatusMessage(statusMessageQuizEl, message, message.startsWith("Lỗi") ? 'error' : 'success');
+        })
+        .withFailureHandler(function(error) {
+          showLoading(loadingSpinnerSolutionEl, false);
+          setStatusMessage(statusMessageQuizEl, 'Lỗi khi lưu vào Sheet: ' + error.message, 'error');
+          console.error("Lỗi ghi vào Sheet: ", error);
+        })
+        .logToSheet(currentQuizData); 
+    });
+
+    function showLoading(spinnerEl, isLoading, message = "") {
+      const associatedStatusEl = spinnerEl === loadingSpinnerSolutionEl ? statusMessageSolutionEl : statusMessageQuizEl;
+      if (isLoading) {
+        spinnerEl.classList.remove('hidden');
+        solveBtn.disabled = true;
+        logToSheetBtn.disabled = true;
+        if (message) setStatusMessage(associatedStatusEl, message, 'info');
+      } else {
+        spinnerEl.classList.add('hidden');
+        solveBtn.disabled = false;
+        logToSheetBtn.disabled = false;
+      }
+    }
+
+    function setStatusMessage(element, message, type = 'info') {
+        element.textContent = message; 
+        element.classList.remove('text-red-500', 'text-green-500', 'text-yellow-600', 'text-blue-500', 'text-gray-600');
+        switch (type) {
+            case 'error': element.classList.add('text-red-500'); break;
+            case 'success': element.classList.add('text-green-500'); break;
+            case 'warning': element.classList.add('text-yellow-600'); break;
+            case 'info': element.classList.add('text-blue-500'); break;
+            default: element.classList.add('text-gray-600');
+        }
+    }
+  </script>
+</body>
+</html>
