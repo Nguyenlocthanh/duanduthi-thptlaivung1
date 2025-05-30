@@ -2,7 +2,7 @@
 <html class="h-full bg-gray-100">
 <head>
   <base target="_top">
-  <title>Ứng dụng Giải Toán &amp; Trắc Nghiệm</title>
+  <title>Ứng dụng Giải Toán &amp; Trắc Nghiệm (Phiên bản GitHub)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -129,6 +129,8 @@
     <header class="bg-blue-600 text-white p-3 shadow-md sticky top-0 z-20">
       <h1 class="text-lg sm:text-xl font-bold text-center">Ứng Dụng Giải Toán &amp; Trắc Nghiệm</h1>
       <p class="text-center text-blue-100 text-xs mt-0.5">Nhập bài toán, tải ảnh, nhận lời giải và thử sức!</p>
+      <p class="text-center text-red-100 text-xs mt-0.5 font-bold">LƯU Ý: Đây là phiên bản chỉ hiển thị giao diện trên GitHub Pages. Các chức năng "Giải & Tạo Trắc Nghiệm" và "Lưu Trắc Nghiệm vào Sheet" sẽ KHÔNG hoạt động.</p>
+      <p class="text-center text-green-100 text-xs mt-0.5">Để sử dụng đầy đủ chức năng, vui lòng truy cập qua URL Apps Script của bạn.</p>
     </header>
 
     <main id="mainContentArea" class="flex-grow overflow-y-auto p-3 space-y-4">
@@ -136,20 +138,13 @@
         <h2 class="text-base sm:text-lg font-semibold mb-3 text-blue-700">NHẬP BÀI TOÁN CỦA BẠN</h2>
         
         <div class="mb-4">
-          <label for="problemText" class="block text-sm font-medium text-gray-700 mb-1"></label>
-
           <label for="problemText" class="block text-sm font-medium text-gray-700 mb-1">Hãy đặt câu hỏi để khám phá thế giới toán học sâu sắc hơn! Mỗi thắc mắc bạn gửi gắm không chỉ giúp bạn mở rộng hiểu biết mà còn là nguồn dữ liệu quý giá, góp phần làm phong phú thêm dự án học tập này.</label>
-
-
           <textarea id="problemText" rows="4" class="w-full p-2.5 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
         </div>
 
         <div class="mb-4">
           <label for="imageUpload" class="block text-sm font-medium text-gray-700 mb-1">Bạn đã có thể tải hình ảnh lên:</label>
-
           <p class="text-xs text-gray-500 mb-1">Xin lưu ý, vì tính năng chụp ảnh trực tiếp hiện chưa được hỗ trợ, bạn vui lòng sử dụng thiết bị của mình để chụp ảnh trước, sau đó tải tệp đã chụp lên.</p>
-
-
           <input type="file" id="imageUpload" accept="image/png, image/jpeg, image/gif, image/webp" class="w-full text-sm text-gray-500
             file:mr-2 file:py-2 file:px-3
             file:rounded-full file:border-0
@@ -294,6 +289,59 @@
         imageBase64 = null;
         imageMimeType = null;
     });
+
+    // VÔ HIỆU HÓA CÁC CHỨC NĂNG BACKEND KHI CHẠY TRÊN GITHUB PAGES
+    // Vì google.script.run sẽ không tồn tại ở đây, chúng ta sẽ ghi đè chúng
+    // hoặc ngăn chặn việc gọi chúng.
+
+    // Hàm giả lập (mock) cho google.script.run
+    const mockGoogleScriptRun = {
+        withSuccessHandler: function(callback) {
+            this._successCallback = callback;
+            return this;
+        },
+        withFailureHandler: function(callback) {
+            this._failureCallback = callback;
+            return this;
+        },
+        processProblem: function(data) {
+            console.warn("Chức năng 'processProblem' không hoạt động trên GitHub Pages. Vui lòng sử dụng URL Apps Script để chạy đầy đủ ứng dụng.");
+            showLoading(loadingSpinnerSolutionEl, false);
+            setStatusMessage(statusMessageSolutionEl, 'Chức năng này KHÔNG hoạt động trên GitHub Pages. Vui lòng truy cập qua URL Apps Script.', 'error');
+            // Mô phỏng kết quả để giao diện không bị trống hoàn toàn
+            setTimeout(() => {
+                this._successCallback({
+                    solution: "Lời giải chỉ mang tính minh họa trên GitHub Pages. Chức năng chính không hoạt động.",
+                    quiz: {
+                        error: "Chức năng quiz không hoạt động trên GitHub Pages."
+                    }
+                });
+            }, 500);
+        },
+        logToSheet: function(data) {
+            console.warn("Chức năng 'logToSheet' không hoạt động trên GitHub Pages. Vui lòng sử dụng URL Apps Script để chạy đầy đủ ứng dụng.");
+            showLoading(loadingSpinnerSolutionEl, false);
+            setStatusMessage(statusMessageQuizEl, 'Chức năng lưu vào Sheet KHÔNG hoạt động trên GitHub Pages.', 'error');
+            setTimeout(() => {
+                this._successCallback("Lỗi: Không thể lưu vào Sheet trên GitHub Pages.");
+            }, 500);
+        }
+    };
+
+    // Kiểm tra nếu window.google.script.run không tồn tại (khi chạy trên GitHub Pages)
+    if (typeof google === 'undefined' || typeof google.script === 'undefined' || typeof google.script.run === 'undefined') {
+        window.google = window.google || {};
+        window.google.script = window.google.script || {};
+        window.google.script.run = mockGoogleScriptRun;
+
+        // Vô hiệu hóa trực tiếp các nút để người dùng không nhầm lẫn
+        solveBtn.disabled = false; // Đã đặt false để mock có thể kích hoạt
+        logToSheetBtn.disabled = false; // Đã đặt false để mock có thể kích hoạt
+        
+        // Thêm cảnh báo rõ ràng hơn cho người dùng
+        problemTextEl.placeholder = "Nhập bài toán (chỉ hiển thị giao diện, chức năng giải KHÔNG hoạt động).";
+    }
+
 
     solveBtn.addEventListener('click', function() {
       const problemText = problemTextEl.value.trim();
