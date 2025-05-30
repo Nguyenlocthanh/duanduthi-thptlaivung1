@@ -58,6 +58,8 @@
             align-items: center; /* Căn giữa theo chiều ngang */
             z-index: 9999; /* Đảm bảo nằm trên cùng của mọi thứ */
             transition: opacity 0.5s ease; /* Hiệu ứng mờ dần khi ẩn */
+            padding: 20px; /* Thêm padding để nội dung không bị sát cạnh */
+            box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước tổng thể */
         }
         .loading-overlay.hidden {
             opacity: 0; /* Làm mờ dần */
@@ -80,6 +82,31 @@
             margin-top: 20px;
             font-size: 1.2em;
             color: #333;
+            text-align: center;
+        }
+
+        /* Kiểu cho hiển thị thời gian */
+        .time-date-info {
+            margin-top: 15px;
+            font-size: 1.1em;
+            color: #555;
+            text-align: center;
+        }
+
+        /* Kiểu cho container hình ảnh truyền thống */
+        .traditional-images {
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* Khoảng cách giữa các hình ảnh */
+            margin-top: 30px;
+            flex-wrap: wrap; /* Cho phép xuống dòng trên màn hình nhỏ */
+        }
+        .traditional-images img {
+            width: 100px; /* Kích thước hình ảnh */
+            height: 100px;
+            object-fit: cover; /* Đảm bảo hình ảnh không bị méo */
+            border-radius: 8px; /* Bo tròn góc hình ảnh */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ nhẹ */
         }
 
         /* Keyframes cho hiệu ứng quay của spinner */
@@ -87,21 +114,66 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 600px) {
+            .loading-message {
+                font-size: 1em;
+            }
+            .time-date-info {
+                font-size: 0.9em;
+            }
+            .traditional-images img {
+                width: 80px;
+                height: 80px;
+            }
+            .traditional-images {
+                gap: 10px;
+            }
+        }
     </style>
 </head>
 <body>
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-spinner"></div>
         <p class="loading-message">Đang tải ứng dụng...</p>
+        
+        <p id="timeDateDisplay" class="time-date-info"></p>
+
+        <div class="traditional-images">
+            <img src="https://placehold.co/100x100/A0522D/FFFFFF?text=Áo+Dài" alt="Áo Dài truyền thống">
+            <img src="https://placehold.co/100x100/228B22/FFFFFF?text=Nón+Lá" alt="Nón Lá truyền thống">
+            <img src="https://placehold.co/100x100/8B4513/FFFFFF?text=Chùa+Một+Cột" alt="Chùa Một Cột">
+        </div>
     </div>
 
     <iframe id="mainIframe" src="https://script.google.com/macros/s/AKfycbw5tyF6r1bCdVShuC5gCaKp7PUomYE7GQRZzHRgXojjP5qE-sB0WdOLOkiPSTHAFwzoeA/exec"></iframe>
 
     
+
     <script>
         // Lấy tham chiếu đến các phần tử HTML
         const loadingOverlay = document.getElementById('loadingOverlay');
         const mainIframe = document.getElementById('mainIframe');
+        const timeDateDisplay = document.getElementById('timeDateDisplay');
+
+        // Hàm cập nhật thời gian, ngày tháng năm
+        function updateTimeAndDate() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('vi-VN'); // Định dạng giờ Việt Nam
+            const date = now.toLocaleDateString('vi-VN', {
+                weekday: 'long', // Thứ trong tuần
+                day: '2-digit',   // Ngày
+                month: '2-digit', // Tháng
+                year: 'numeric'   // Năm
+            });
+            timeDateDisplay.textContent = `${time}, ${date}`;
+        }
+
+        // Cập nhật thời gian ngay lập tức khi tải trang
+        updateTimeAndDate();
+        // Cập nhật thời gian mỗi giây
+        setInterval(updateTimeAndDate, 1000);
 
         // Lắng nghe sự kiện 'load' của iframe
         // Khi nội dung của iframe tải xong, lớp phủ sẽ ẩn đi
