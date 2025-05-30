@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Ứng Dụng</title>
+    <title>Giới Thiệu Dự Án - Ứng Dụng Đa Chức Năng</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -14,145 +14,140 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2f7 50%, #dbeafe 100%); /* Nền gradient nhẹ */
+            background-color: #f8f8f8; /* Nền xám nhạt */
             color: #374151; /* Màu chữ mặc định */
+            padding: 1rem;
+            box-sizing: border-box;
         }
         .container {
-            flex-grow: 1;
+            max-width: 900px;
+            margin: auto; /* Căn giữa theo chiều ngang và dọc */
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 2rem;
+            text-align: center;
+            flex-grow: 1; /* Cho phép container giãn nở */
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: center; /* Căn giữa nội dung bên trong */
             align-items: center;
-            padding: 1.5rem;
-            width: 100%;
-            max-width: 1200px; /* Giới hạn chiều rộng container */
-            margin: 0 auto;
         }
         h1 {
-            font-size: 2.5rem; /* To rõ ràng */
+            font-size: 2.5rem;
             font-weight: 700;
             color: #1f2937;
-            margin-bottom: 2.5rem;
-            text-align: center;
+            margin-bottom: 1.5rem;
             line-height: 1.2;
         }
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
-            gap: 1.5rem; /* Khoảng cách giữa các nút */
-            width: 100%;
-            max-width: 900px; /* Giới hạn chiều rộng grid */
-        }
-        .app-button {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-            background-color: white;
-            border-radius: 0.75rem; /* Bo tròn góc */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            text-decoration: none;
-            color: #1f2937; /* Màu chữ */
+        h2 {
+            font-size: 1.75rem;
             font-weight: 600;
-            font-size: 1.125rem; /* Kích thước chữ */
-            transition: all 0.3s ease-in-out;
-            text-align: center;
-            min-height: 150px; /* Chiều cao tối thiểu của nút */
+            color: #2563eb; /* Màu xanh dương */
+            margin-top: 2rem;
+            margin-bottom: 1rem;
         }
-        .app-button:hover {
-            transform: translateY(-5px); /* Hiệu ứng nhấc lên */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            background-color: #e0f2f7; /* Màu nền nhẹ khi hover */
+        p {
+            font-size: 1.125rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            color: #4a5568;
         }
-        .app-button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1rem;
+            text-align: left;
+            width: 100%;
+            max-width: 600px;
         }
-        .app-button .icon {
-            font-size: 3rem; /* Kích thước icon */
-            margin-bottom: 0.75rem;
+        ul li {
+            background-color: #e0f2f7; /* Màu nền nhẹ cho mỗi mục */
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+            color: #00796b;
+        }
+        ul li .icon {
+            font-size: 1.2rem;
+            margin-right: 0.75rem;
+            color: #2563eb; /* Icon màu xanh */
+        }
+        .footer-text {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #6b7280;
         }
 
         /* Responsive adjustments */
         @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
             h1 {
                 font-size: 2rem;
-                margin-bottom: 2rem;
             }
-            .grid-container {
-                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-                gap: 1rem;
+            h2 {
+                font-size: 1.5rem;
             }
-            .app-button {
-                padding: 1rem;
+            p {
                 font-size: 1rem;
-                min-height: 120px;
             }
-            .app-button .icon {
-                font-size: 2.5rem;
-                margin-bottom: 0.5rem;
+            ul li {
+                font-size: 0.9rem;
             }
         }
         @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+                margin: 1rem; /* Giảm margin để không bị sát cạnh */
+            }
             h1 {
                 font-size: 1.75rem;
-                margin-bottom: 1.5rem;
             }
-            .grid-container {
-                grid-template-columns: 1fr; /* Một cột trên màn hình rất nhỏ */
-                gap: 0.75rem;
+            h2 {
+                font-size: 1.25rem;
             }
-            .app-button {
-                padding: 0.75rem;
+            p {
                 font-size: 0.9rem;
-                min-height: 100px;
             }
-            .app-button .icon {
-                font-size: 2rem;
-                margin-bottom: 0.4rem;
+            ul li {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.85rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Chọn Ứng Dụng Của Bạn</h1>
-        <div class="grid-container">
-            <a href="https://script.google.com/macros/s/AKfycbw5tyF6r1bCdVShuC5gCaKp7PUomYE7GQRZzHRgXojjP5qE-sB0WdOLOkiPSTHAFwzoeA/exec" target="_blank" class="app-button">
-                <span class="icon">➕</span> Ứng Dụng Giải Toán
-            </a>
-            <a href="https://script.google.com/macros/s/AKfycby_mvqxvmdB7ljk6Ywzw_782Mdad_w3HUCSIhO7Ee8BZfYcdXrY_VYCqltpjOGs9feC/exec" target="_blank" class="app-button">
-                <span class="icon">📚</span> Khám Phá Sử Việt
-            </a>
-            <a href="https://script.google.com/macros/s/AKfycbwQExUP1qsmDZn5lEe5Bd5dLoVzCTFOoWhYtHnsjp_Q_qVL4MdUOmBAR7f1tjCPNQOXsQ/exec" target="_blank" class="app-button">
-                <span class="icon">📜</span> Góc Lịch Sử
-            </a>
-            <a href="https://script.google.com/macros/s/AKfycbwnzBdxtExqS-2hJJ5aQiZz1d4hHo4YpnlIMiUQQ-sZnHGQzGpRLq-wZfIhLfIXRjQ_/exec" target="_blank" class="app-button">
-                <span class="icon">🧠</span> Giải Toán Thông Minh
-            </a>
-            <a href="https://script.google.com/macros/s/AKfycbxIfpS_wOLtG793C7ffGdS1L7E3bwnBfc1W1-BJPTMnwrG9PmQ6FTL3dgdwpKVRkFvx/exec" target="_blank" class="app-button">
-                <span class="icon">🎮</span> Trò Chơi Toán Học
-            </a>
-            <a href="https://script.google.com/macros/s/AKfycbw9sejTq7pns5tEn84A2A9P6bz7nT03SMNm0GYCMHTtFPlJXT1w9liAaWzdEyjbg2hhRw/exec" target="_blank" class="app-button">
-                <span class="icon">📝</span> Tạo Đề Ôn Tập
-            </a>
-            <a href="llm_math_assistant.html" target="_blank" class="app-button">
-                <span class="icon">🤖</span> Trợ Lý AI
-            </a>
-            <a href="https://www.wikipedia.org/" target="_blank" class="app-button">
-                <span class="icon">🌐</span> Wikipedia
-            </a>
-            <a href="https://www.google.com/" target="_blank" class="app-button">
-                <span class="icon">🔍</span> Google
-            </a>
-            </div>
+        <h1>Chào Mừng Đến Với Dự Án "Học Tập Thông Minh"</h1>
+        <p>
+            Dự án này là một nền tảng ứng dụng đa chức năng được thiết kế để hỗ trợ quá trình học tập và khám phá kiến thức một cách hiệu quả và thú vị. Chúng tôi tin rằng công nghệ có thể làm cho việc học trở nên dễ dàng và hấp dẫn hơn bao giờ hết.
+        </p>
+        <p>
+            Với sự kết hợp của các công cụ mạnh mẽ và giao diện thân thiện, "Học Tập Thông Minh" mang đến một trải nghiệm học tập toàn diện, từ giải quyết bài tập đến khám phá lịch sử và tương tác với AI.
+        </p>
+
+        <h2>Các Tính Năng Nổi Bật:</h2>
+        <ul>
+            <li><span class="icon">✨</span> **Giải Toán & Trắc Nghiệm:** Hỗ trợ giải quyết các bài toán phức tạp và tạo câu hỏi trắc nghiệm để củng cố kiến thức.</li>
+            <li><span class="icon">🤖</span> **Trợ Lý AI:** Sử dụng trí tuệ nhân tạo để giải thích các khái niệm toán học một cách chi tiết, dễ hiểu, giúp bạn nắm vững kiến thức.</li>
+            <li><span class="icon">📚</span> **Khám Phá Lịch Sử:** Các ứng dụng chuyên biệt giúp bạn tìm hiểu sâu hơn về lịch sử Việt Nam và thế giới.</li>
+            <li><span class="icon">🎮</span> **Trò Chơi Toán Học:** Học mà chơi, chơi mà học với các trò chơi tương tác, giúp rèn luyện tư duy toán học một cách vui vẻ.</li>
+            <li><span class="icon">📝</span> **Tạo Đề Ôn Tập:** Công cụ hỗ trợ tạo các đề kiểm tra, ôn tập theo chủ đề, giúp bạn chuẩn bị tốt nhất cho các kỳ thi.</li>
+            <li><span class="icon">🌐</span> **Truy Cập Nhanh:** Dễ dàng chuyển đổi giữa các công cụ và trang web hữu ích khác ngay trong ứng dụng.</li>
+        </ul>
+
+        <p>
+            Chúng tôi hy vọng dự án này sẽ là một người bạn đồng hành đắc lực trên con đường chinh phục tri thức của bạn!
+        </p>
+
+        <p class="footer-text">
+            Dự án được phát triển bởi nhóm **Huỳnh Gia Bảo - Lý Ngọc An**.
+        </p>
     </div>
-    <footer class="text-center text-xs text-gray-500 py-4 border-t border-gray-300 bg-white mt-auto">
-        <p>&copy; <span id="currentYear"></span> - Ứng dụng đang phát triển dự thi "Huỳnh Gia Bảo - Lý Ngọc An".</p>
-    </footer>
-    <script>
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
-    </script>
 </body>
 </html>
