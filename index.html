@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ứng dụng Giải Toán & Trắc Nghiệm</title>
+    <title>Ứng dụng Đa Chức Năng</title>
     <style>
         /* Đảm bảo body chiếm toàn bộ viewport và không có margin/padding */
         body {
@@ -17,11 +17,29 @@
             background-color: #f3f4f6; /* Màu nền nhẹ mặc định */
         }
 
-        /* Kiểu cho iframe */
-        iframe {
+        /* Container cho các iframe chính, chiếm hết không gian còn lại */
+        #appContentContainer {
+            flex-grow: 1;
+            display: flex; /* Sử dụng flex để quản lý các iframe con */
             width: 100%;
-            flex-grow: 1; /* Cho phép iframe chiếm hết không gian còn lại */
+            position: relative; /* Quan trọng để các iframe con có thể position: absolute */
+        }
+
+        /* Kiểu cho mỗi iframe ứng dụng chính */
+        .main-app-iframe {
+            position: absolute; /* Xếp chồng lên nhau */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             border: none;
+            visibility: hidden; /* Ẩn bằng visibility để không ảnh hưởng đến kích thước */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out; /* Hiệu ứng chuyển đổi mượt mà */
+        }
+        .main-app-iframe.active {
+            visibility: visible;
+            opacity: 1;
         }
 
         /* Kiểu cho thông báo tùy chỉnh ở cuối trang */
@@ -30,19 +48,9 @@
             color: #00796b; /* Màu xanh đậm */
             padding: 15px;
             text-align: center;
-            font-size: 0.9em; /* Kích thước chữ nhỏ hơn theo yêu cầu trước */
-            border-bottom: 2px solid #b2ebf2;
+            font-size: 0.9em;
+            border-top: 2px solid #b2ebf2; /* Thay border-bottom thành border-top */
             font-weight: 500;
-        }
-        .custom-message a {
-            color: #004d40;
-            font-weight: bold;
-            text-decoration: underline;
-        }
-        .note-text {
-            font-size: 0.25em; /* Kích thước chữ rất nhỏ, có thể cần điều chỉnh */
-            color: #4CAF50; /* Màu xanh lá */
-            margin-top: 5px;
         }
 
         /* Kiểu cho lớp phủ chờ tải trang (Loading Overlay) */
@@ -60,13 +68,13 @@
             justify-content: center; /* Căn giữa theo chiều dọc */
             align-items: center; /* Căn giữa theo chiều ngang */
             z-index: 9999; /* Đảm bảo nằm trên cùng của mọi thứ */
-            padding: 50px; /* Tăng padding để văn bản không bị sát cạnh */
-            box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước tổng thể */
+            padding: 50px;
+            box-sizing: border-box;
             text-align: center;
         }
         .loading-overlay.hidden {
-            opacity: 0; /* Làm mờ dần */
-            visibility: hidden; /* Ẩn hoàn toàn khỏi DOM sau khi mờ */
+            opacity: 0;
+            visibility: hidden;
             pointer-events: none; /* Cho phép tương tác với nội dung bên dưới khi ẩn */
         }
 
@@ -79,29 +87,111 @@
             margin: 0 auto;
             opacity: 0; /* Ban đầu ẩn để tạo hiệu ứng fade */
             transition: opacity 1s ease-in-out, color 1.5s ease-in-out; /* Hiệu ứng mờ dần/hiện ra và chuyển màu chữ */
-            display: flex; /* Sử dụng flexbox để căn giữa văn bản */
-            align-items: center; /* Căn giữa theo chiều dọc */
-            justify-content: center; /* Căn giữa theo chiều ngang */
+            display: flex;
+            align-items: center;
+            justify-content: center;
             height: 100%; /* Chiếm toàn bộ chiều cao của phần tử cha */
-            text-align: center; /* Đảm bảo văn bản được căn giữa */
+            text-align: center;
         }
         .quote-display.fade-in {
             opacity: 1;
         }
 
-        /* Responsive adjustments for smaller screens */
+        /* === Bong bóng chuyển đổi và Menu === */
+        .switch-bubble-btn {
+            position: fixed;
+            bottom: 80px; /* Nâng cao hơn để tránh chồng lên thông báo cuối trang */
+            right: 20px;
+            background-color: #f97316; /* Màu cam */
+            color: white;
+            border-radius: 9999px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Bỏ font-size: 2rem; vì giờ dùng ảnh */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            padding: 2px; /* Padding nhẹ để ảnh không dính sát viền */
+            overflow: hidden; /* Đảm bảo ảnh không tràn ra ngoài */
+        }
+        .switch-bubble-btn:hover {
+            background-color: #ea580c; /* Cam đậm hơn khi hover */
+            transform: translateY(-2px);
+        }
+        .switch-bubble-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Kiểu cho ảnh bên trong bong bóng */
+        .switch-bubble-btn .bubble-icon {
+            width: 100%; /* Ảnh chiếm toàn bộ chiều rộng của bong bóng */
+            height: 100%; /* Ảnh chiếm toàn bộ chiều cao của bong bóng */
+            object-fit: contain; /* Đảm bảo ảnh hiển thị đầy đủ mà không bị cắt hoặc méo */
+            border-radius: 9999px; /* Để ảnh cũng tròn theo hình dạng bong bóng */
+        }
+
+        .switch-options-menu {
+            position: fixed;
+            bottom: 150px; /* Vị trí phía trên bong bóng */
+            right: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            padding: 10px 0;
+            width: 220px; /* Chiều rộng menu */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+        }
+        .switch-options-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .switch-options-menu .menu-item {
+            display: block;
+            padding: 10px 15px;
+            color: #333;
+            text-decoration: none;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 0.95rem;
+        }
+        .switch-options-menu .menu-item:hover {
+            background-color: #f0f0f0;
+        }
+        .switch-options-menu .menu-item.active {
+            background-color: #e0f2f7; /* Màu xanh nhạt cho mục đang hoạt động */
+            color: #00796b;
+            font-weight: bold;
+        }
+
+        /* Responsive adjustments */
         @media (max-width: 768px) {
-            .quote-display {
-                font-size: 1.8em; /* Thu nhỏ cho máy tính bảng */
-                max-width: 90%;
-            }
+            .quote-display { font-size: 1.8em; max-width: 90%; }
+            .switch-bubble-btn { width: 50px; height: 50px; bottom: 70px; }
+            .switch-options-menu { bottom: 130px; width: 180px; }
+            .switch-options-menu .menu-item { font-size: 0.9rem; }
         }
 
         @media (max-width: 480px) {
-            .quote-display {
-                font-size: 1.4em; /* Thu nhỏ cho điện thoại */
-                max-width: 95%;
-            }
+            .quote-display { font-size: 1.4em; max-width: 95%; }
+            .switch-bubble-btn { width: 45px; height: 45px; bottom: 60px; right: 15px; }
+            .switch-options-menu { bottom: 115px; right: 15px; width: 160px; padding: 5px 0; }
+            .switch-options-menu .menu-item { padding: 8px 12px; font-size: 0.85rem; }
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -111,21 +201,41 @@
         <div id="quoteDisplay" class="quote-display"></div>
     </div>
 
-    <iframe id="mainIframe" src="https://script.google.com/macros/s/AKfycbw5tyF6r1bCdVShuC5gCaKp7PUomYE7GQRZzHRgXojjP5qE-sB0WdOLOkiPSTHAFwzoeA/exec"></iframe>
+    <div id="appContentContainer">
+        <iframe id="appIframe2" class="main-app-iframe active" src="https://script.google.com/macros/s/AKfycby_mvqxvmdB7ljk6Ywzw_782Mdad_w3HUCSIhO7Ee8BZfYcdXrY_VYCqltpjOGs9feC/exec"></iframe>
 
-    <div class="custom-message">
-        <p>
-            Đây là ứng dụng do nhóm "Lý Ngọc An-Huỳnh Gia Bảo" phát triển.
-        </p>
+        <iframe id="appIframe1" class="main-app-iframe" src="https://script.google.com/macros/s/AKfycbw5tyF6r1bCdVShuC5gCaKp7PUomYE7GQRZzHRgXojjP5qE-sB0WdOLOkiPSTHAFwzoeA/exec"></iframe>
+
+        <iframe id="appIframe3" class="main-app-iframe" src="https://script.google.com/macros/s/AKfycbwQExUP1qsmDZn5lEe5Bd5dLoVzCTFOoWhYtHnsjp_Q_qVL4MdUOmBAR7f1tjCPNQOXsQ/exec"></iframe>
+
+        <iframe id="appIframe4" class="main-app-iframe" src="https://script.google.com/macros/s/AKfycbwnzBdxtExqS-2hJJ5aQiZz1d4hHo4YpnlIMiUQQ-sZnHGQzGpRLq-wZfIhLfIXRjQ_/exec"></iframe>
+        <iframe id="appIframe5" class="main-app-iframe" src="https://script.google.com/macros/s/AKfycbxIfpS_wOLtG793C7ffGdS1L7E3bwnBfc1W1-BJPTMnwrG9PmQ6FTL3dgdwpKVRkFvx/exec"></iframe>
+        </div>
+    
+    <div id="switchBubble" class="switch-bubble-btn">
+        <img src="https://lh3.googleusercontent.com/pw/AP1GczMrdABpkyuFldP3L22YPavg9YJqbEZI6ytrgoYsfrBwgMh1SsNd6CjLCiBj0XpsdAioQu5hjy5meiQQrhBT6W7USJsc43yNgwl5mD-TfaCXhBxQDlcZuL0rSdRDCXNnTn4z3kBhusFuYbMBqPEEmtg=w500-h500-s-no-gm?authuser=0" alt="Nút chuyển đổi ứng dụng" class="bubble-icon">
     </div>
 
-    <script>
-        // Lấy tham chiếu đến các phần tử HTML
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const mainIframe = document.getElementById('mainIframe');
-        const quoteDisplay = document.getElementById('quoteDisplay');
+    <div id="switchMenu" class="switch-options-menu">
+        <button data-target-iframe="appIframe6" class="menu-item">Trang Chủ</button>
+        <button data-target-iframe="appIframe1" class="menu-item">Ứng Dụng Giải Toán</button>
+        <button data-target-iframe="appIframe2" class="menu-item active">📚Khám Phá Sử Việt📚</button>
+        <button data-target-iframe="appIframe3" class="menu-item">📚Góc Lịch Sử📚</button>
+        <button data-target-iframe="appIframe4" class="menu-item">Giải Toán Thông Minh</button>
+        <button data-target-iframe="appIframe5" class="menu-item">Trò Chơi Toán Học</button>
+        </div>
 
-        // Danh sách 20 câu nói hay
+    <script>
+        // Get references to HTML elements
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const mainIframe = document.getElementById('appIframe1'); 
+        const quoteDisplay = document.getElementById('quoteDisplay');
+        const switchBubble = document.getElementById('switchBubble');
+        const switchMenu = document.getElementById('switchMenu');
+        const menuItems = document.querySelectorAll('.switch-options-menu .menu-item');
+        const appIframes = document.querySelectorAll('.main-app-iframe'); 
+
+        // List of 20 quotes
         const quotes = [
             "Học, học nữa, học mãi. – Lê-nin",
             "Không thầy đố mày làm nên. – Tục ngữ Việt Nam",
@@ -149,9 +259,9 @@
             "Học hành là việc cả đời, không ai có thể học thay cho ai. – Tục ngữ Việt Nam"
         ];
 
-        let lastQuoteIndex = -1; // Biến để lưu chỉ số câu nói cuối cùng được hiển thị
+        let lastQuoteIndex = -1; 
 
-        // Hàm tạo màu ngẫu nhiên (dạng hex)
+        // Function to generate a random hex color
         function generateRandomColor() {
             const letters = '0123456789ABCDEF';
             let color = '#';
@@ -161,7 +271,7 @@
             return color;
         }
 
-        // Hàm chuyển đổi màu hex sang RGB
+        // Function to convert hex color to RGB
         function hexToRgb(hex) {
             const bigint = parseInt(hex.slice(1), 16);
             const r = (bigint >> 16) & 255;
@@ -170,8 +280,7 @@
             return { r, g, b };
         }
 
-        // Hàm tính toán độ sáng (luminance) của màu RGB
-        // Dựa trên công thức W3C cho độ sáng tương đối
+        // Function to calculate luminance (relative brightness) of an RGB color
         function getLuminance(r, g, b) {
             const a = [r, g, b].map(v => {
                 v /= 255;
@@ -180,14 +289,14 @@
             return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
         }
 
-        // Hàm chọn màu chữ tương phản (đen hoặc trắng)
+        // Function to choose a contrasting text color (black or white)
         function getContrastingTextColor(hexColor) {
             const { r, g, b } = hexToRgb(hexColor);
             const luminance = getLuminance(r, g, b);
-            return luminance > 0.5 ? '#000000' : '#FFFFFF'; // Nếu nền sáng, chữ đen; nếu nền tối, chữ trắng
+            return luminance > 0.5 ? '#000000' : '#FFFFFF'; 
         }
 
-        // Hàm hiển thị câu nói tiếp theo với hiệu ứng fade và màu sắc ngẫu nhiên
+        // Function to display the next quote with fade effect and random colors
         function displayNextQuote() {
             let newQuoteIndex;
             do {
@@ -196,25 +305,25 @@
 
             lastQuoteIndex = newQuoteIndex;
 
-            const randomBgColor = generateRandomColor();
-            const contrastingTextColor = getContrastingTextColor(randomBgColor);
+            const randomBgColor = generateRandomColor(); 
+            const contrastingTextColor = getContrastingTextColor(randomBgColor); 
 
-            quoteDisplay.style.opacity = 0; // Làm mờ câu nói hiện tại
+            quoteDisplay.style.opacity = 0; 
             
             setTimeout(() => {
-                loadingOverlay.style.backgroundColor = randomBgColor; // Đặt màu nền mới
-                quoteDisplay.style.color = contrastingTextColor; // Đặt màu chữ mới
-                quoteDisplay.textContent = quotes[newQuoteIndex]; // Đặt nội dung câu nói mới
-                quoteDisplay.style.opacity = 1; // Hiện ra câu nói mới
-            }, 1000); // Chờ 1 giây để hiệu ứng mờ hoàn tất trước khi đổi nội dung và màu sắc
+                loadingOverlay.style.backgroundColor = randomBgColor; 
+                quoteDisplay.style.color = contrastingTextColor; 
+                quoteDisplay.textContent = quotes[newQuoteIndex]; 
+                quoteDisplay.style.opacity = 1; 
+            }, 1000); 
         }
 
-        // --- CÁC BIẾN VÀ LOGIC MỚI ĐỂ ĐIỀU KHIỂN THỜI GIAN TỐI THIỂU ---
-        const MIN_DISPLAY_TIME = 5000; // Thời gian hiển thị tối thiểu (5 giây)
+        // --- Logic to control minimum display time ---
+        const MIN_DISPLAY_TIME = 5000; 
         let iframeLoaded = false;
         let minTimeElapsed = false;
 
-        // Hàm ẩn màn hình chờ
+        // Function to hide the loading screen
         function hideLoadingScreen() {
             if (iframeLoaded && minTimeElapsed) {
                 loadingOverlay.classList.add('hidden');
@@ -222,34 +331,84 @@
             }
         }
 
-        // Lắng nghe sự kiện 'load' của iframe
+        // Listen for the 'load' event of the first iframe (appIframe1)
         mainIframe.addEventListener('load', () => {
             iframeLoaded = true;
-            console.log("Iframe đã tải xong.");
-            hideLoadingScreen(); // Thử ẩn màn hình chờ
+            console.log("First iframe loaded.");
+            hideLoadingScreen(); 
         });
 
-        // Đặt timeout cho thời gian hiển thị tối thiểu
+        // Set a timeout for the minimum display time
         setTimeout(() => {
             minTimeElapsed = true;
-            console.log(`Thời gian tối thiểu (${MIN_DISPLAY_TIME / 1000}s) đã trôi qua.`);
-            hideLoadingScreen(); // Thử ẩn màn hình chờ
+            console.log(`Minimum time (${MIN_DISPLAY_TIME / 1000}s) elapsed.`);
+            hideLoadingScreen(); 
         }, MIN_DISPLAY_TIME);
-        // --- KẾT THÚC CÁC BIẾN VÀ LOGIC MỚI ---
+        // --- End minimum display time logic ---
 
-        // Hiển thị câu nói đầu tiên ngay lập tức
-        displayNextQuote();
-        // Cập nhật câu nói mỗi 7 giây
+
+        // --- Logic for Switch Bubble and Iframes ---
+
+        // Function to show a specific iframe and hide others
+        function showAppIframe(targetIframeId) {
+            appIframes.forEach(iframe => {
+                if (iframe.id === targetIframeId) {
+                    iframe.classList.add('active'); 
+                } else {
+                    iframe.classList.remove('active'); 
+                }
+            });
+
+            // Update 'active' state for the buttons in the menu
+            menuItems.forEach(item => {
+                if (item.dataset.targetIframe === targetIframeId) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            switchMenu.classList.remove('active'); 
+        }
+
+        // Event listener for the switch bubble click
+        switchBubble.addEventListener('click', () => {
+            switchMenu.classList.toggle('active'); 
+        });
+
+        // Event listener for menu item clicks
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetIframeId = item.dataset.targetIframe; 
+                showAppIframe(targetIframeId); 
+            });
+        });
+
+        // Close menu when clicking outside the bubble and menu
+        document.addEventListener('click', (event) => {
+            const isClickInsideBubble = switchBubble.contains(event.target);
+            const isClickInsideMenu = switchMenu.contains(event.target);
+
+            if (!isClickInsideBubble && !isClickInsideMenu && switchMenu.classList.contains('active')) {
+                switchMenu.classList.remove('active');
+            }
+        });
+
+        // Show the first iframe on initial page load
+        showAppIframe('appIframe1'); 
+
+        // --- End Logic for Switch Bubble and Iframes ---
+
+        // Update quote every 7 seconds
         setInterval(displayNextQuote, 7000);
 
-        // Fallback: Đặt một timeout để ẩn lớp phủ nếu sự kiện 'load' của iframe không xảy ra
-        // (Thời gian này nên dài hơn MIN_DISPLAY_TIME)
+        // Fallback to hide loading screen if loading fails or takes too long
         setTimeout(() => {
             if (!loadingOverlay.classList.contains('hidden')) {
-                console.warn("Iframe load event not detected, hiding loading overlay after fallback timeout.");
+                console.warn("Loading fallback triggered: Hiding loading overlay.");
                 loadingOverlay.classList.add('hidden');
             }
-        }, MIN_DISPLAY_TIME + 10000); // Ví dụ: MIN_DISPLAY_TIME + 10 giây dự phòng
+        }, MIN_DISPLAY_TIME + 10000); 
     </script>
 </body>
 </html>
