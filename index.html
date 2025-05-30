@@ -8,7 +8,7 @@
         body {
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Ngăn cuộn trang chính nếu iframe chiếm toàn màn hình */
+            overflow: hidden;
             font-family: sans-serif;
             display: flex;
             flex-direction: column;
@@ -16,23 +16,42 @@
         }
         iframe {
             width: 100%;
-            flex-grow: 1; /* Cho phép iframe chiếm hết không gian còn lại */
+            flex-grow: 1;
             border: none;
         }
-        .header-message {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 10px;
+        .custom-message {
+            background-color: #e0f2f7; /* Màu xanh nhạt */
+            color: #00796b; /* Màu xanh đậm */
+            padding: 15px;
             text-align: center;
+            font-size: 1.1em;
+            border-bottom: 2px solid #b2ebf2;
+            font-weight: 500;
+        }
+        .custom-message a {
+            color: #004d40;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .note-text {
             font-size: 0.9em;
-            border-bottom: 1px solid #f5c6cb;
+            color: #4CAF50; /* Màu xanh lá */
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="header-message">
-        <p>Đây là trang GitHub Pages của bạn. Ứng dụng Google Apps Script được nhúng bên dưới.</p>
-        <p>Để có trải nghiệm tốt nhất, bạn nên truy cập trực tiếp <a href="https://script.google.com/macros/s/AKfycbw5tyF6r1bCdVShuC5gCaKp7PUomYE7GQRZzHRgXojjP5qE-sB0WdOLOkiPSTHAFwzoeA/exec" target="_blank" style="color: #721c24; font-weight: bold;">tại đây</a>.</p>
+    <div class="custom-message">
+        <p>
+            Đây là ứng dụng giải toán/trắc nghiệm do **[Tên của bạn/Nhóm của bạn]** phát triển, sử dụng công nghệ Google Apps Script.
+        </p>
+        <p class="note-text">
+            Vui lòng bỏ qua thông báo cảnh báo nhỏ của Google ở phía trên ứng dụng.
+        </p>
+        <p class="note-text">
+            Để có trải nghiệm tốt nhất hoặc nếu gặp vấn đề khi nhúng, bạn có thể truy cập trực tiếp ứng dụng tại:
+            <a href="https://script.google.com/macros/s/AKfycbw5tyF6r1bCdVShuC5gCaKp7PUomYE7GQRZzHRgXojjP5qE-sB0WdOLOkiPSTHAFwzoeA/exec" target="_blank">URL Ứng dụng của bạn</a>
+        </p>
     </div>
 
     <iframe src="https://script.google.com/macros/s/AKfycbw5tyF6r1bCdVShuC5gCaKp7PUomYE7GQRZzHRgXojjP5qE-sB0WdOLOkiPSTHAFwzoeA/exec"></iframe>
