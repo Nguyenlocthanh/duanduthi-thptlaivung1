@@ -5,27 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ứng dụng Giải Toán & Trắc Nghiệm</title>
     <style>
+        /* Đảm bảo body chiếm toàn bộ viewport và không có margin/padding */
         body {
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            overflow: hidden; /* Ngăn cuộn trang chính khi lớp phủ hiển thị */
             font-family: sans-serif;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            height: 100vh; /* Chiếm toàn bộ chiều cao viewport */
         }
+
+        /* Kiểu cho iframe */
         iframe {
             width: 100%;
-            flex-grow: 1;
+            flex-grow: 1; /* Cho phép iframe chiếm hết không gian còn lại */
             border: none;
         }
+
+        /* Kiểu cho thông báo tùy chỉnh ở cuối trang */
         .custom-message {
             background-color: #e0f2f7; /* Màu xanh nhạt */
             color: #00796b; /* Màu xanh đậm */
             padding: 15px;
             text-align: center;
-            /* Thay đổi font-size ở đây */
-            font-size: 0.9em; /* Đã thay đổi từ 1.1em thành 0.9em để chữ nhỏ hơn */
+            font-size: 0.9em; /* Kích thước chữ nhỏ hơn theo yêu cầu trước */
             border-bottom: 2px solid #b2ebf2;
             font-weight: 500;
         }
@@ -35,20 +39,91 @@
             text-decoration: underline;
         }
         .note-text {
-            /* Dòng này không thay đổi vì nó đã nhỏ (0.25em) */
-            font-size: 0.25em; 
+            font-size: 0.25em; /* Kích thước chữ rất nhỏ, có thể cần điều chỉnh */
             color: #4CAF50; /* Màu xanh lá */
             margin-top: 5px;
+        }
+
+        /* Kiểu cho lớp phủ chờ tải trang (Loading Overlay) */
+        .loading-overlay {
+            position: fixed; /* Cố định trên màn hình */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9); /* Nền trắng mờ */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Căn giữa theo chiều dọc */
+            align-items: center; /* Căn giữa theo chiều ngang */
+            z-index: 9999; /* Đảm bảo nằm trên cùng của mọi thứ */
+            transition: opacity 0.5s ease; /* Hiệu ứng mờ dần khi ẩn */
+        }
+        .loading-overlay.hidden {
+            opacity: 0; /* Làm mờ dần */
+            visibility: hidden; /* Ẩn hoàn toàn khỏi DOM sau khi mờ */
+            pointer-events: none; /* Cho phép tương tác với nội dung bên dưới khi ẩn */
+        }
+
+        /* Kiểu cho spinner bên trong lớp phủ */
+        .loading-spinner {
+            border: 5px solid #f3f3f3; /* Màu xám nhạt */
+            border-top: 5px solid #3498db; /* Màu xanh */
+            border-radius: 50%; /* Tạo hình tròn */
+            width: 50px; /* Kích thước spinner */
+            height: 50px;
+            animation: spin 1s linear infinite; /* Hiệu ứng quay */
+        }
+
+        /* Kiểu cho thông báo tải trang */
+        .loading-message {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        /* Keyframes cho hiệu ứng quay của spinner */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <iframe src="https://script.google.com/macros/s/AKfycbw5tyF6r1bCdVShuC5gCaKp7PUomYE7GQRZzHRgXojjP5qE-sB0WdOLOkiPSTHAFwzoeA/exec"></iframe>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p class="loading-message">Đang tải ứng dụng...</p>
+    </div>
+
+    <iframe id="mainIframe" src="https://script.google.com/macros/s/AKfycbw5tyF6r1bCdVShuC5gCaKp7PUomYE7GQRZzHRgXojjP5qE-sB0WdOLOkiPSTHAFwzoeA/exec"></iframe>
 
     <div class="custom-message">
         <p>
             Đây là ứng dụng do nhóm "Lý Ngọc An-Huỳnh Gia Bảo" phát triển.
         </p>
     </div>
+
+    <script>
+        // Lấy tham chiếu đến các phần tử HTML
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const mainIframe = document.getElementById('mainIframe');
+
+        // Lắng nghe sự kiện 'load' của iframe
+        // Khi nội dung của iframe tải xong, lớp phủ sẽ ẩn đi
+        mainIframe.addEventListener('load', () => {
+            loadingOverlay.classList.add('hidden'); // Thêm class 'hidden' để ẩn lớp phủ
+            // Tùy chọn: Cuộn đến đầu trang sau khi tải xong
+            window.scrollTo(0, 0);
+        });
+
+        // Fallback: Đặt một timeout để ẩn lớp phủ nếu sự kiện 'load' của iframe không xảy ra
+        // (Điều này có thể hữu ích trong một số trường hợp hiếm gặp hoặc nếu iframe bị chặn)
+        setTimeout(() => {
+            if (!loadingOverlay.classList.contains('hidden')) {
+                console.warn("Iframe load event not detected, hiding loading overlay after timeout.");
+                loadingOverlay.classList.add('hidden');
+            }
+        }, 10000); // Ẩn sau 10 giây nếu không có sự kiện load từ iframe
+    </script>
 </body>
 </html>
