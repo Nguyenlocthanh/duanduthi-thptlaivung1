@@ -113,7 +113,11 @@
 
     <iframe id="mainIframe" src="https://script.google.com/macros/s/AKfycbw5tyF6r1bCdVShuC5gCaKp7PUomYE7GQRZzHRgXojjP5qE-sB0WdOLOkiPSTHAFwzoeA/exec"></iframe>
 
-    
+    <div class="custom-message">
+        <p>
+            Đây là ứng dụng do nhóm "Lý Ngọc An-Huỳnh Gia Bảo" phát triển.
+        </p>
+    </div>
 
     <script>
         // Lấy tham chiếu đến các phần tử HTML
@@ -180,23 +184,20 @@
         function getContrastingTextColor(hexColor) {
             const { r, g, b } = hexToRgb(hexColor);
             const luminance = getLuminance(r, g, b);
-            // Ngưỡng độ sáng để quyết định màu chữ (thường là 0.179 hoặc 0.5)
-            // Dùng 0.5 để đảm bảo tương phản tốt hơn cho các màu ngẫu nhiên
             return luminance > 0.5 ? '#000000' : '#FFFFFF'; // Nếu nền sáng, chữ đen; nếu nền tối, chữ trắng
         }
 
         // Hàm hiển thị câu nói tiếp theo với hiệu ứng fade và màu sắc ngẫu nhiên
         function displayNextQuote() {
-            // Chọn chỉ số câu nói ngẫu nhiên, đảm bảo không lặp lại ngay câu trước
             let newQuoteIndex;
             do {
                 newQuoteIndex = Math.floor(Math.random() * quotes.length);
-            } while (newQuoteIndex === lastQuoteIndex && quotes.length > 1); // Đảm bảo có ít nhất 2 câu để tránh lặp
+            } while (newQuoteIndex === lastQuoteIndex && quotes.length > 1);
 
-            lastQuoteIndex = newQuoteIndex; // Cập nhật chỉ số câu nói cuối cùng
+            lastQuoteIndex = newQuoteIndex;
 
-            const randomBgColor = generateRandomColor(); // Tạo màu nền ngẫu nhiên
-            const contrastingTextColor = getContrastingTextColor(randomBgColor); // Tạo màu chữ tương phản
+            const randomBgColor = generateRandomColor();
+            const contrastingTextColor = getContrastingTextColor(randomBgColor);
 
             quoteDisplay.style.opacity = 0; // Làm mờ câu nói hiện tại
             
@@ -208,26 +209,47 @@
             }, 1000); // Chờ 1 giây để hiệu ứng mờ hoàn tất trước khi đổi nội dung và màu sắc
         }
 
-        // Hiển thị câu nói đầu tiên ngay lập tức
-        displayNextQuote();
-        // Cập nhật câu nói mỗi 7 giây (tăng từ 5 giây)
-        setInterval(displayNextQuote, 7000); // Đổi câu nói và màu sắc mỗi 7 giây
+        // --- CÁC BIẾN VÀ LOGIC MỚI ĐỂ ĐIỀU KHIỂN THỜI GIAN TỐI THIỂU ---
+        const MIN_DISPLAY_TIME = 5000; // Thời gian hiển thị tối thiểu (5 giây)
+        let iframeLoaded = false;
+        let minTimeElapsed = false;
+
+        // Hàm ẩn màn hình chờ
+        function hideLoadingScreen() {
+            if (iframeLoaded && minTimeElapsed) {
+                loadingOverlay.classList.add('hidden');
+                window.scrollTo(0, 0);
+            }
+        }
 
         // Lắng nghe sự kiện 'load' của iframe
-        // Khi nội dung của iframe tải xong, lớp phủ sẽ ẩn đi
         mainIframe.addEventListener('load', () => {
-            loadingOverlay.classList.add('hidden'); // Thêm class 'hidden' để ẩn lớp phủ
-            // Tùy chọn: Cuộn đến đầu trang sau khi tải xong
-            window.scrollTo(0, 0);
+            iframeLoaded = true;
+            console.log("Iframe đã tải xong.");
+            hideLoadingScreen(); // Thử ẩn màn hình chờ
         });
 
+        // Đặt timeout cho thời gian hiển thị tối thiểu
+        setTimeout(() => {
+            minTimeElapsed = true;
+            console.log(`Thời gian tối thiểu (${MIN_DISPLAY_TIME / 1000}s) đã trôi qua.`);
+            hideLoadingScreen(); // Thử ẩn màn hình chờ
+        }, MIN_DISPLAY_TIME);
+        // --- KẾT THÚC CÁC BIẾN VÀ LOGIC MỚI ---
+
+        // Hiển thị câu nói đầu tiên ngay lập tức
+        displayNextQuote();
+        // Cập nhật câu nói mỗi 7 giây
+        setInterval(displayNextQuote, 7000);
+
         // Fallback: Đặt một timeout để ẩn lớp phủ nếu sự kiện 'load' của iframe không xảy ra
+        // (Thời gian này nên dài hơn MIN_DISPLAY_TIME)
         setTimeout(() => {
             if (!loadingOverlay.classList.contains('hidden')) {
-                console.warn("Iframe load event not detected, hiding loading overlay after timeout.");
+                console.warn("Iframe load event not detected, hiding loading overlay after fallback timeout.");
                 loadingOverlay.classList.add('hidden');
             }
-        }, 15000); // Thời gian chờ fallback vẫn là 15 giây
+        }, MIN_DISPLAY_TIME + 10000); // Ví dụ: MIN_DISPLAY_TIME + 10 giây dự phòng
     </script>
 </body>
 </html>
