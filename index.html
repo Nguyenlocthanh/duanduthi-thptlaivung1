@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chào Mừng Đến Với Ứng Dụng</title>
+    <style>
+        /* Đảm bảo body chiếm toàn bộ viewport và không có margin/padding */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Ngăn cuộn trang chính khi lớp phủ hiển thị */
+            font-family: 'Inter', sans-serif; /* Sử dụng font Inter */
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Chiếm toàn bộ chiều cao viewport */
+            background-color: #f3f4f6; /* Màu nền nhẹ mặc định */
+        }
+
+        /* Kiểu cho lớp phủ chờ tải trang (Loading Overlay) */
+        .loading-overlay {
+            position: fixed; /* Cố định trên màn hình */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Nền sẽ được đặt bằng JavaScript */
+            transition: background-color 1.5s ease-in-out, opacity 0.5s ease; /* Hiệu ứng chuyển màu nền mượt mà */
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Căn giữa theo chiều dọc */
+            align-items: center; /* Căn giữa theo chiều ngang */
+            z-index: 9999; /* Đảm bảo nằm trên cùng của mọi thứ */
+            padding: 50px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .loading-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none; /* Cho phép tương tác với nội dung bên dưới khi ẩn */
+        }
+
+        /* Kiểu cho khu vực hiển thị câu nói */
+        .quote-display {
+            font-size: 2.5em; /* To rõ ràng hơn, chiếm nhiều không gian */
+            /* Màu chữ sẽ được đặt bằng JavaScript */
+            font-style: italic;
+            max-width: 90%; /* Giới hạn chiều rộng để dễ đọc */
+            margin: 0 auto;
+            opacity: 0; /* Ban đầu ẩn để tạo hiệu ứng fade */
+            transition: opacity 1s ease-in-out, color 1.5s ease-in-out; /* Hiệu ứng mờ dần/hiện ra và chuyển màu chữ */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%; /* Chiếm toàn bộ chiều cao của phần tử cha */
+            text-align: center;
+        }
+        .quote-display.fade-in {
+            opacity: 1;
+        }
+
+        /* Kiểu cho nút "Vào Ứng Dụng" */
+        .enter-app-button {
+            display: none; /* Ẩn ban đầu */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #10b981; /* Màu xanh ngọc */
+            color: white;
+            padding: 1.5rem 3rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+            border-radius: 0.75rem;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            transition: all 0.3s ease-in-out;
+            z-index: 9998; /* Dưới loading overlay nhưng trên nội dung khác */
+            opacity: 0; /* Ẩn ban đầu */
+        }
+        .enter-app-button.show {
+            display: block;
+            opacity: 1;
+        }
+        .enter-app-button:hover {
+            background-color: #059669;
+            transform: translate(-50%, -50%) scale(1.05); /* Hiệu ứng phóng to nhẹ */
+        }
+        .enter-app-button:active {
+            transform: translate(-50%, -50%) scale(0.98);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .quote-display { font-size: 1.8em; max-width: 90%; }
+            .enter-app-button {
+                font-size: 1.5rem;
+                padding: 1.2rem 2.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quote-display { font-size: 1.4em; max-width: 95%; }
+            .enter-app-button {
+                font-size: 1.2rem;
+                padding: 1rem 2rem;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div id="quoteDisplay" class="quote-display"></div>
+    </div>
+
+    <a href="menu_page.html" class="enter-app-button" id="enterAppButton">
+        Vào Ứng Dụng
+    </a>
+
+    <div class="custom-message">
+        <p>
+            Đây là ứng dụng do nhóm "Lý Ngọc An-Huỳnh Gia Bảo" phát triển.
+        </p>
+    </div>
+
+    <script>
+        // Get references to HTML elements
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const quoteDisplay = document.getElementById('quoteDisplay');
+        const enterAppButton = document.getElementById('enterAppButton');
+
+        // List of 20 quotes
+        const quotes = [
+            "Học, học nữa, học mãi. – Lê-nin",
+            "Không thầy đố mày làm nên. – Tục ngữ Việt Nam",
+            "Dân ta phải biết sử ta, cho tường gốc tích nước nhà Việt Nam. – Chủ tịch Hồ Chí Minh",
+            "Một chữ cũng là thầy, nửa chữ cũng là thầy. – Tục ngữ Việt Nam",
+            "Học vấn không có biên giới. – Khuyết danh",
+            "Non sông Việt Nam có trở nên tươi đẹp hay không, dân tộc Việt Nam có bước tới đài vinh quang để sánh vai với các cường quốc năm châu được hay không, chính là nhờ một phần lớn ở công học tập của các em. – Chủ tịch Hồ Chí Minh",
+            "Người thầy trung bình chỉ nói. Người thầy giỏi giải thích. Người thầy xuất chúng chứng minh. Người thầy vĩ đại truyền cảm hứng. – William Arthur Ward",
+            "Đường đi khó không phải vì ngăn sông cách núi, mà vì lòng người ngại núi e sông. – Nguyễn Bá Học",
+            "Yêu Tổ quốc, yêu đồng bào. – Chủ tịch Hồ Chí Minh",
+            "Tri thức là sức mạnh. – Francis Bacon",
+            "Công cha nghĩa mẹ ơn thầy, nghĩa tình non nước công xây đắp bền. – Ca dao Việt Nam",
+            "Sống là phải học, học để biết, học để làm, học để chung sống, học để tự khẳng định mình. – Jacques Delors",
+            "Ai ơi giữ chí cho bền, dù ai xoay hướng đổi nền mặc ai. – Tục ngữ Việt Nam",
+            "Nghề giáo là nghề cao quý nhất trong các nghề cao quý, vì nó sáng tạo ra những con người sáng tạo. – Phạm Văn Đồng",
+            "Học không biết chán, dạy không biết mỏi. – Khổng Tử",
+            "Lòng yêu nước là điểm tựa của mọi ý chí, mọi hành động, mọi sáng kiến, mọi sáng tạo. – V.I. Lê-nin",
+            "Thầy cô không chỉ dạy học trò kiến thức mà còn dạy cả cách làm người. – Khuyết danh",
+            "Đừng bao giờ ngừng học hỏi, bởi cuộc sống không bao giờ ngừng dạy. – Khuyết danh",
+            "Mỗi tấc đất của Tổ quốc là một tấc vàng. – Khuyết danh",
+            "Học hành là việc cả đời, không ai có thể học thay cho ai. – Tục ngữ Việt Nam"
+        ];
+
+        let lastQuoteIndex = -1; 
+
+        // Function to generate a random hex color
+        function generateRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // Function to convert hex color to RGB
+        function hexToRgb(hex) {
+            const bigint = parseInt(hex.slice(1), 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return { r, g, b };
+        }
+
+        // Function to calculate luminance (relative brightness) of an RGB color
+        function getLuminance(r, g, b) {
+            const a = [r, g, b].map(v => {
+                v /= 255;
+                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+            });
+            return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+        }
+
+        // Function to choose a contrasting text color (black or white)
+        function getContrastingTextColor(hexColor) {
+            const { r, g, b } = hexToRgb(hexColor);
+            const luminance = getLuminance(r, g, b);
+            return luminance > 0.5 ? '#000000' : '#FFFFFF'; 
+        }
+
+        // Function to display the next quote with fade effect and random colors
+        function displayNextQuote() {
+            let newQuoteIndex;
+            do {
+                newQuoteIndex = Math.floor(Math.random() * quotes.length);
+            } while (newQuoteIndex === lastQuoteIndex && quotes.length > 1);
+
+            lastQuoteIndex = newQuoteIndex;
+
+            const randomBgColor = generateRandomColor(); 
+            const contrastingTextColor = getContrastingTextColor(randomBgColor); 
+
+            quoteDisplay.style.opacity = 0; 
+            
+            setTimeout(() => {
+                loadingOverlay.style.backgroundColor = randomBgColor; 
+                quoteDisplay.style.color = contrastingTextColor; 
+                quoteDisplay.textContent = quotes[newQuoteIndex]; 
+                quoteDisplay.style.opacity = 1; 
+            }, 1000); 
+        }
+
+        // --- Logic to control minimum display time and show button ---
+        const MIN_DISPLAY_TIME = 5000; // Minimum display time (5 seconds)
+
+        // Display the first quote immediately
+        displayNextQuote();
+        // Update quote every 7 seconds
+        setInterval(displayNextQuote, 7000);
+
+        // After MIN_DISPLAY_TIME, hide loading overlay and show the "Enter App" button
+        setTimeout(() => {
+            loadingOverlay.classList.add('hidden');
+            enterAppButton.classList.add('show');
+            window.scrollTo(0, 0);
+        }, MIN_DISPLAY_TIME);
+        // --- End new logic ---
+    </script>
+</body>
+</html>
