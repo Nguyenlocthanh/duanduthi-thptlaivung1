@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trợ Lý Toán Học AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            svg: {
+                fontCache: 'global'
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb; /* gray-50 */
+            color: #374151; /* gray-700 */
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+        }
+        textarea {
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 0.375rem; /* rounded-md */
+            padding: 0.75rem;
+            width: 100%;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6; /* blue-500 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* ring-blue-500/50 */
+        }
+        button {
+            background-color: #10b981; /* emerald-500 */
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #059669; /* emerald-600 */
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .response-area {
+            background-color: #f0f9ff; /* blue-50 */
+            border: 1px solid #bfdbfe; /* blue-200 */
+            border-radius: 0.375rem;
+            padding: 1rem;
+            min-height: 150px;
+            margin-top: 1.5rem;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+        .error-message {
+            color: #ef4444; /* red-500 */
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+        h1 {
+            font-size: 1.75rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            color: #1f2937; /* gray-800 */
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        mjx-container {
+            overflow-x: auto;
+            overflow-y: hidden;
+            max-width: 100%;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Trợ Lý Toán Học ✨</h1>
+        <div class="mb-4">
+            <label for="mathConceptInput" class="block text-sm font-medium text-gray-700 mb-2">Nhập khái niệm hoặc câu hỏi toán học của bạn:</label>
+            <textarea id="mathConceptInput" placeholder="Ví dụ: Định lý Pytago, Phương trình bậc hai, Đạo hàm là gì?" class="w-full"></textarea>
+        </div>
+        <button id="explainButton" class="w-full">Giải thích khái niệm ✨</button>
+        <div id="loadingSpinner" class="loader hidden"></div>
+        <div id="responseArea" class="response-area">
+            <p class="text-gray-500">Lời giải thích sẽ xuất hiện ở đây.</p>
+        </div>
+        <div id="errorMessage" class="error-message hidden"></div>
+    </div>
+
+    <script>
+        const mathConceptInput = document.getElementById('mathConceptInput');
+        const explainButton = document.getElementById('explainButton');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const responseArea = document.getElementById('responseArea');
+        const errorMessage = document.getElementById('errorMessage');
+
+        explainButton.addEventListener('click', async () => {
+            const prompt = mathConceptInput.value.trim();
+            if (!prompt) {
+                errorMessage.textContent = "Vui lòng nhập khái niệm hoặc câu hỏi.";
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+
+            responseArea.innerHTML = '';
+            errorMessage.classList.add('hidden');
+            loadingSpinner.classList.remove('hidden');
+            explainButton.disabled = true;
+
+            try {
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: `Giải thích khái niệm toán học sau đây một cách chi tiết và dễ hiểu, cung cấp ví dụ nếu cần. Sử dụng cú pháp LaTeX cho các công thức toán học: ${prompt}` }] });
+
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Leave this as-is. Canvas will provide the API key at runtime.
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    responseArea.innerHTML = text;
+                    if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+                        window.MathJax.typesetPromise([responseArea]).catch(function (err) {
+                            console.error('MathJax typesetting error: ' + err.message, err);
+                        });
+                    }
+                } else {
+                    responseArea.innerHTML = '<p class="text-gray-500">Không thể nhận được lời giải thích. Vui lòng thử lại.</p>';
+                    console.error("Unexpected API response structure:", result);
+                }
+            } catch (error) {
+                errorMessage.textContent = "Đã xảy ra lỗi khi gọi API: " + error.message;
+                errorMessage.classList.remove('hidden');
+                console.error("API call error:", error);
+            } finally {
+                loadingSpinner.classList.add('hidden');
+                explainButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
