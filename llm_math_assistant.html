@@ -6,125 +6,242 @@
     <title>Trợ Lý Toán Học AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+        // Cấu hình MathJax để hiển thị công thức toán học
         MathJax = {
             tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-                processEscapes: true
+                inlineMath: [['$', '$'], ['\\(', '\\)']], // Cú pháp cho công thức inline
+                displayMath: [['$$', '$$'], ['\\[', '\\]']], // Cú pháp cho công thức hiển thị riêng
+                processEscapes: true // Xử lý các ký tự thoát
             },
             svg: {
-                fontCache: 'global'
+                fontCache: 'global' // Tối ưu hóa font cho SVG
             },
             options: {
+                // Bỏ qua các thẻ HTML không cần xử lý MathJax
                 skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-                ignoreHtmlClass: 'tex2jax_ignore',
-                processHtmlClass: 'tex2jax_process'
+                ignoreHtmlClass: 'tex2jax_ignore', // Bỏ qua các phần tử có class này
+                processHtmlClass: 'tex2jax_process' // Chỉ xử lý các phần tử có class này
             }
         };
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Đặt font Inter cho toàn bộ body và thiết lập màu nền, chữ */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f9fafb; /* gray-50 */
-            color: #374151; /* gray-700 */
-            padding: 1rem;
+            background-color: #f0f2f5; /* Nền xám nhạt hiện đại */
+            color: #333; /* Màu chữ chính */
+            padding: 1.5rem; /* Padding tổng thể cho trang */
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            min-height: 100vh; /* Đảm bảo chiếm toàn bộ chiều cao viewport */
+            box-sizing: border-box; /* Tính padding vào kích thước */
         }
-        .container {
+        /* Container chính của ứng dụng */
+        .app-container {
             max-width: 800px;
-            margin: 0 auto;
+            margin: 0 auto; /* Căn giữa container */
             width: 100%;
             background-color: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            padding: 1.5rem;
+            border-radius: 1rem; /* Bo tròn góc nhiều hơn */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08); /* Bóng đổ mềm mại hơn */
+            padding: 2.5rem; /* Tăng padding bên trong container */
+            box-sizing: border-box;
+            flex-grow: 1; /* Cho phép container giãn nở */
         }
+        /* Tiêu đề chính */
+        h1 {
+            font-size: 2.5rem; /* Kích thước lớn hơn nữa */
+            font-weight: 800; /* Đậm hơn */
+            color: #1a202c; /* Màu chữ rất đậm */
+            text-align: center;
+            margin-bottom: 2.5rem; /* Tăng khoảng cách dưới */
+            letter-spacing: -0.03em; /* Khoảng cách chữ nhỏ hơn */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05); /* Bóng đổ nhẹ cho tiêu đề */
+        }
+        /* Nhãn input */
+        label {
+            font-size: 1.05rem; /* Lớn hơn một chút */
+            font-weight: 600; /* Đậm hơn */
+            color: #4a5568;
+            margin-bottom: 0.6rem; /* Tăng khoảng cách dưới */
+            display: block; /* Đảm bảo label là block */
+        }
+        /* Textarea input */
         textarea {
-            border: 1px solid #d1d5db; /* gray-300 */
-            border-radius: 0.375rem; /* rounded-md */
-            padding: 0.75rem;
+            border: 1px solid #cbd5e0; /* Màu viền nhẹ nhàng */
+            border-radius: 0.75rem; /* Bo tròn góc input */
+            padding: 1rem;
             width: 100%;
             font-size: 1rem;
-            resize: vertical;
-            min-height: 100px;
-            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+            resize: vertical; /* Cho phép thay đổi kích thước theo chiều dọc */
+            min-height: 140px; /* Chiều cao tối thiểu lớn hơn */
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06); /* Bóng đổ bên trong */
+            transition: all 0.2s ease-in-out; /* Hiệu ứng chuyển đổi mượt mà */
+            color: #2d3748; /* Màu chữ trong input */
+            background-color: #fcfcfc; /* Nền trắng hơi ngà */
         }
         textarea:focus {
             outline: none;
-            border-color: #3b82f6; /* blue-500 */
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* ring-blue-500/50 */
+            border-color: #4299e1; /* Màu xanh khi focus */
+            box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.3), inset 0 1px 3px rgba(0, 0, 0, 0.08); /* Hiệu ứng ring và bóng đổ trong khi focus */
+            background-color: #ffffff; /* Nền trắng tinh khi focus */
         }
+        /* Nút button */
         button {
-            background-color: #10b981; /* emerald-500 */
+            background-color: #4299e1; /* Màu xanh dương chủ đạo */
             color: white;
-            font-weight: 600;
-            padding: 0.75rem 1.25rem;
-            border-radius: 0.375rem;
-            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-weight: 700; /* Đậm hơn */
+            padding: 1rem 2rem; /* Padding lớn hơn */
+            border-radius: 0.75rem; /* Bo tròn góc nút */
+            transition: all 0.2s ease-in-out; /* Hiệu ứng chuyển đổi mượt mà */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.18); /* Bóng đổ rõ hơn */
+            border: none; /* Bỏ viền mặc định */
+            cursor: pointer; /* Con trỏ bàn tay */
+            font-size: 1.15rem; /* Kích thước chữ nút */
+            display: block; /* Đảm bảo nút chiếm toàn bộ chiều rộng */
+            width: 100%;
+            letter-spacing: 0.02em; /* Khoảng cách chữ nhẹ */
+            text-transform: uppercase; /* Chữ hoa */
         }
         button:hover {
-            background-color: #059669; /* emerald-600 */
-            transform: translateY(-1px);
+            background-color: #3182ce; /* Xanh đậm hơn khi hover */
+            transform: translateY(-2px); /* Nhấc nhẹ nút lên */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* Bóng đổ rõ hơn khi hover */
         }
         button:active {
-            transform: translateY(0);
+            transform: translateY(0); /* Trở về vị trí cũ khi click */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Bóng đổ nhỏ hơn khi click */
+        }
+        button:disabled {
+            background-color: #a0aec0; /* Màu xám khi bị vô hiệu hóa */
+            cursor: not-allowed; /* Con trỏ không cho phép */
             box-shadow: none;
+            transform: none;
         }
+        /* Spinner tải */
         .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
+            border: 5px solid #e2e8f0; /* Màu xám nhạt */
+            border-top: 5px solid #4299e1; /* Màu xanh */
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 45px; /* Kích thước lớn hơn */
+            height: 45px;
             animation: spin 1s linear infinite;
-            margin: 1rem auto;
+            margin: 2rem auto; /* Khoảng cách lớn hơn */
         }
+        /* Keyframes cho spinner */
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        /* Khu vực hiển thị phản hồi */
         .response-area {
-            background-color: #f0f9ff; /* blue-50 */
-            border: 1px solid #bfdbfe; /* blue-200 */
-            border-radius: 0.375rem;
-            padding: 1rem;
-            min-height: 150px;
-            margin-top: 1.5rem;
+            background-color: #f7fafc; /* Nền rất nhạt */
+            border: 1px solid #bee3f8; /* Viền xanh nhạt */
+            border-radius: 0.75rem;
+            padding: 1.5rem; /* Padding lớn hơn */
+            min-height: 200px; /* Chiều cao tối thiểu lớn hơn */
+            margin-top: 2.5rem; /* Khoảng cách lớn hơn */
             overflow-x: auto;
+            line-height: 1.8; /* Khoảng cách dòng lớn hơn để dễ đọc */
+            font-size: 1.05rem; /* Kích thước chữ lớn hơn */
+            color: #2d3748; /* Màu chữ đậm */
+            box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.06); /* Bóng đổ bên trong rõ hơn */
+        }
+        /* Tiêu đề phần trong response-area */
+        .response-area h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #2b6cb0; /* Xanh dương đậm */
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #ebf8ff; /* Đường kẻ dưới nhẹ */
+            padding-bottom: 0.5rem;
+        }
+        .response-area h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #4c78a6; /* Xám xanh */
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        /* Danh sách (ví dụ cho các bước giải) */
+        .response-area ul {
+            list-style: disc; /* Dùng dấu chấm */
+            margin-left: 1.5rem;
+            padding-left: 0;
+            margin-bottom: 1rem;
+        }
+        .response-area ul li {
+            margin-bottom: 0.5rem;
             line-height: 1.6;
         }
+
+        /* Thông báo lỗi */
         .error-message {
-            color: #ef4444; /* red-500 */
-            font-weight: 500;
-            margin-top: 1rem;
-        }
-        h1 {
-            font-size: 1.75rem; /* text-2xl */
-            font-weight: 700; /* font-bold */
-            color: #1f2937; /* gray-800 */
+            color: #e53e3e;
+            font-weight: 600; /* Đậm hơn */
+            margin-top: 1.5rem; /* Khoảng cách lớn hơn */
             text-align: center;
-            margin-bottom: 1.5rem;
         }
+        /* MathJax container */
         mjx-container {
             overflow-x: auto;
             overflow-y: hidden;
             max-width: 100%;
-            font-size: 1.1em;
+            font-size: 1.15em; /* Tăng kích thước MathJax */
+            padding: 0.3em 0;
+            display: block;
+        }
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .app-container {
+                padding: 1.25rem; /* Giảm padding trên mobile */
+                border-radius: 0.75rem;
+            }
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 1.5rem;
+            }
+            label {
+                font-size: 0.95rem;
+            }
+            textarea {
+                padding: 0.85rem;
+                min-height: 120px;
+            }
+            button {
+                padding: 0.85rem 1.5rem;
+                font-size: 1.05rem;
+            }
+            .loader {
+                width: 35px;
+                height: 35px;
+                margin: 1.5rem auto;
+            }
+            .response-area {
+                padding: 1rem;
+                min-height: 150px;
+                margin-top: 1.75rem;
+                font-size: 0.95rem;
+            }
+            .error-message {
+                font-size: 0.9rem;
+            }
+            mjx-container {
+                font-size: 1.05em;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="app-container">
         <h1>Trợ Lý Toán Học ✨</h1>
-        <div class="mb-4">
-            <label for="mathConceptInput" class="block text-sm font-medium text-gray-700 mb-2">Nhập khái niệm hoặc câu hỏi toán học của bạn:</label>
-            <textarea id="mathConceptInput" placeholder="Ví dụ: Định lý Pytago, Phương trình bậc hai, Đạo hàm là gì?" class="w-full"></textarea>
+        <div class="mb-6">
+            <label for="mathConceptInput">Nhập khái niệm hoặc câu hỏi toán học của bạn:</label>
+            <textarea id="mathConceptInput" placeholder="Ví dụ: Định lý Pytago, Phương trình bậc hai, Đạo hàm là gì?"></textarea>
         </div>
-        <button id="explainButton" class="w-full">Giải thích khái niệm ✨</button>
+        <button id="explainButton">Giải thích khái niệm ✨</button>
         <div id="loadingSpinner" class="loader hidden"></div>
         <div id="responseArea" class="response-area">
             <p class="text-gray-500">Lời giải thích sẽ xuất hiện ở đây.</p>
@@ -133,60 +250,151 @@
     </div>
 
     <script>
+        // Lấy tham chiếu đến các phần tử HTML
         const mathConceptInput = document.getElementById('mathConceptInput');
         const explainButton = document.getElementById('explainButton');
         const loadingSpinner = document.getElementById('loadingSpinner');
         const responseArea = document.getElementById('responseArea');
         const errorMessage = document.getElementById('errorMessage');
 
+        // Thêm lắng nghe sự kiện click cho nút giải thích
         explainButton.addEventListener('click', async () => {
-            const prompt = mathConceptInput.value.trim();
+            const prompt = mathConceptInput.value.trim(); // Lấy nội dung từ input
+
+            // Kiểm tra nếu input rỗng
             if (!prompt) {
                 errorMessage.textContent = "Vui lòng nhập khái niệm hoặc câu hỏi.";
-                errorMessage.classList.remove('hidden');
-                return;
+                errorMessage.classList.remove('hidden'); // Hiển thị thông báo lỗi
+                return; // Dừng hàm
             }
 
-            responseArea.innerHTML = '';
-            errorMessage.classList.add('hidden');
-            loadingSpinner.classList.remove('hidden');
-            explainButton.disabled = true;
+            // Reset trạng thái và hiển thị spinner
+            responseArea.innerHTML = ''; // Xóa nội dung phản hồi cũ
+            errorMessage.classList.add('hidden'); // Ẩn thông báo lỗi
+            loadingSpinner.classList.remove('hidden'); // Hiển thị spinner
+            explainButton.disabled = true; // Vô hiệu hóa nút để tránh gửi nhiều yêu cầu
 
             try {
+                // Chuẩn bị lịch sử trò chuyện cho API Gemini
                 let chatHistory = [];
-                chatHistory.push({ role: "user", parts: [{ text: `Giải thích khái niệm toán học sau đây một cách chi tiết và dễ hiểu, cung cấp ví dụ nếu cần. Sử dụng cú pháp LaTeX cho các công thức toán học: ${prompt}` }] });
+                chatHistory.push({ 
+                    role: "user", 
+                    parts: [{ text: `Giải thích khái niệm toán học "${prompt}" một cách chi tiết và dễ hiểu, cung cấp các phần như Định nghĩa, Các bước giải, Ví dụ minh họa. Đảm bảo mọi công thức toán học đều phải được định dạng bằng LaTeX, sử dụng $...$ cho công thức nội dòng và $$...$$ cho công thức hiển thị riêng. Trả lời theo cấu trúc JSON được cung cấp trong responseSchema.
+                    Ví dụ: Nếu hỏi "phương trình bậc hai", kết quả sẽ có các phần "Định nghĩa", "Cách giải Delta", "Cách nhẩm nghiệm", "Định lý Vi-et", "Ví dụ".` }] 
+                });
 
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // Leave this as-is. Canvas will provide the API key at runtime.
+                // Cấu hình payload cho yêu cầu API
+                const payload = {
+                    contents: chatHistory,
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                "title": { "type": "STRING", "description": "Tiêu đề chính của chủ đề được giải thích." },
+                                "introduction": { "type": "STRING", "description": "Giới thiệu ngắn gọn về chủ đề." },
+                                "sections": {
+                                    "type": "ARRAY",
+                                    "items": {
+                                        "type": "OBJECT",
+                                        "properties": {
+                                            "sectionTitle": { "type": "STRING", "description": "Tiêu đề của từng phần trong lời giải thích (ví dụ: 'Định nghĩa', 'Phương pháp Delta', 'Nhẩm nghiệm', 'Định lý Vi-ét', 'Ví dụ minh họa')." },
+                                            "content": {
+                                                "type": "ARRAY",
+                                                "items": { "type": "STRING" },
+                                                "description": "Các đoạn văn bản hoặc công thức LaTeX. Công thức LaTeX cần được bọc trong $...$ hoặc $$...$$. Mỗi phần tử là một đoạn riêng biệt."
+                                            }
+                                        },
+                                        "required": ["sectionTitle", "content"]
+                                    },
+                                    "description": "Mảng các phần chi tiết của lời giải thích."
+                                },
+                                "summary": { "type": "STRING", "description": "Tóm tắt hoặc kết luận cuối cùng." }
+                            },
+                            "required": ["title", "sections"],
+                            "propertyOrdering": ["title", "introduction", "sections", "summary"]
+                        }
+                    }
+                };
+                // apiKey sẽ được Canvas cung cấp tự động khi chạy trong môi trường của nó.
+                const apiKey = ""; 
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
+                // Gửi yêu cầu đến Gemini API
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
+                // Phân tích phản hồi JSON
                 const result = await response.json();
 
+                // Xử lý phản hồi JSON có cấu trúc
                 if (result.candidates && result.candidates.length > 0 &&
                     result.candidates[0].content && result.candidates[0].content.parts &&
                     result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    responseArea.innerHTML = text;
+                    const jsonString = result.candidates[0].content.parts[0].text;
+                    let parsedData;
+                    try {
+                        parsedData = JSON.parse(jsonString);
+                    } catch (jsonError) {
+                        // Nếu phân tích cú pháp JSON thất bại, hiển thị văn bản thô và thông báo lỗi
+                        responseArea.innerHTML = `<p class="text-red-500">Lỗi phân tích cú pháp JSON từ API. Hiển thị phản hồi thô:</p><pre>${jsonString}</pre>`;
+                        console.error("Lỗi phân tích cú pháp JSON:", jsonError, "Phản hồi thô:", jsonString);
+                        return;
+                    }
+
+                    // Render dữ liệu có cấu trúc thành HTML
+                    let htmlContent = `<h2 class="response-title">${parsedData.title || 'Không có tiêu đề'}</h2>`;
+                    if (parsedData.introduction) {
+                        htmlContent += `<p>${parsedData.introduction}</p>`;
+                    }
+
+                    if (parsedData.sections && parsedData.sections.length > 0) {
+                        parsedData.sections.forEach(section => {
+                            htmlContent += `<h3>${section.sectionTitle || 'Phần'}</h3>`;
+                            if (section.content && Array.isArray(section.content)) {
+                                // Nếu nội dung là mảng các chuỗi, mỗi chuỗi là một đoạn
+                                section.content.forEach(item => {
+                                    // Kiểm tra nếu item là một danh sách hoặc các bước, có thể định dạng đặc biệt
+                                    if (item.startsWith('- ') || item.startsWith('* ')) {
+                                        htmlContent += `<ul><li>${item.substring(2)}</li></ul>`;
+                                    } else {
+                                        htmlContent += `<p>${item}</p>`;
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        htmlContent += '<p>Không có phần giải thích chi tiết nào.</p>';
+                    }
+
+                    if (parsedData.summary) {
+                        htmlContent += `<h3>Tóm tắt</h3><p>${parsedData.summary}</p>`;
+                    }
+
+                    responseArea.innerHTML = htmlContent;
+
+                    // Xử lý MathJax sau khi nội dung HTML đã được tải vào DOM
                     if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
                         window.MathJax.typesetPromise([responseArea]).catch(function (err) {
-                            console.error('MathJax typesetting error: ' + err.message, err);
+                            console.error('Lỗi xử lý MathJax: ' + err.message, err);
                         });
                     }
+
                 } else {
+                    // Xử lý trường hợp phản hồi API không như mong đợi
                     responseArea.innerHTML = '<p class="text-gray-500">Không thể nhận được lời giải thích. Vui lòng thử lại.</p>';
-                    console.error("Unexpected API response structure:", result);
+                    console.error("Cấu trúc phản hồi API không mong muốn:", result);
                 }
             } catch (error) {
+                // Xử lý lỗi trong quá trình gọi API
                 errorMessage.textContent = "Đã xảy ra lỗi khi gọi API: " + error.message;
-                errorMessage.classList.remove('hidden');
-                console.error("API call error:", error);
+                errorMessage.classList.remove('hidden'); // Hiển thị thông báo lỗi
+                console.error("Lỗi gọi API:", error);
             } finally {
+                // Luôn ẩn spinner và kích hoạt lại nút sau khi hoàn tất
                 loadingSpinner.classList.add('hidden');
                 explainButton.disabled = false;
             }
