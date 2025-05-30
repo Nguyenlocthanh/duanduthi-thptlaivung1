@@ -10,10 +10,11 @@
             margin: 0;
             padding: 0;
             overflow: hidden; /* Ngăn cuộn trang chính khi lớp phủ hiển thị */
-            font-family: sans-serif;
+            font-family: 'Inter', sans-serif; /* Sử dụng font Inter */
             display: flex;
             flex-direction: column;
             height: 100vh; /* Chiếm toàn bộ chiều cao viewport */
+            background-color: #f3f4f6; /* Màu nền nhẹ mặc định */
         }
 
         /* Kiểu cho iframe */
@@ -51,15 +52,17 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.9); /* Nền trắng mờ */
+            /* Nền sẽ được đặt bằng JavaScript */
+            transition: background-color 1.5s ease-in-out, opacity 0.5s ease; /* Hiệu ứng chuyển màu nền mượt mà */
+
             display: flex;
             flex-direction: column;
             justify-content: center; /* Căn giữa theo chiều dọc */
             align-items: center; /* Căn giữa theo chiều ngang */
             z-index: 9999; /* Đảm bảo nằm trên cùng của mọi thứ */
-            transition: opacity 0.5s ease; /* Hiệu ứng mờ dần khi ẩn */
-            padding: 20px; /* Thêm padding để nội dung không bị sát cạnh */
+            padding: 50px; /* Tăng padding để văn bản không bị sát cạnh */
             box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước tổng thể */
+            text-align: center;
         }
         .loading-overlay.hidden {
             opacity: 0; /* Làm mờ dần */
@@ -67,84 +70,45 @@
             pointer-events: none; /* Cho phép tương tác với nội dung bên dưới khi ẩn */
         }
 
-        /* Kiểu cho spinner bên trong lớp phủ */
-        .loading-spinner {
-            border: 5px solid #f3f3f3; /* Màu xám nhạt */
-            border-top: 5px solid #3498db; /* Màu xanh */
-            border-radius: 50%; /* Tạo hình tròn */
-            width: 50px; /* Kích thước spinner */
-            height: 50px;
-            animation: spin 1s linear infinite; /* Hiệu ứng quay */
+        /* Kiểu cho khu vực hiển thị câu nói */
+        .quote-display {
+            font-size: 2.5em; /* To rõ ràng hơn, chiếm nhiều không gian */
+            /* Màu chữ sẽ được đặt bằng JavaScript */
+            font-style: italic;
+            max-width: 90%; /* Giới hạn chiều rộng để dễ đọc */
+            margin: 0 auto;
+            opacity: 0; /* Ban đầu ẩn để tạo hiệu ứng fade */
+            transition: opacity 1s ease-in-out, color 1.5s ease-in-out; /* Hiệu ứng mờ dần/hiện ra và chuyển màu chữ */
+            display: flex; /* Sử dụng flexbox để căn giữa văn bản */
+            align-items: center; /* Căn giữa theo chiều dọc */
+            justify-content: center; /* Căn giữa theo chiều ngang */
+            height: 100%; /* Chiếm toàn bộ chiều cao của phần tử cha */
+            text-align: center; /* Đảm bảo văn bản được căn giữa */
         }
-
-        /* Kiểu cho thông báo tải trang */
-        .loading-message {
-            margin-top: 20px;
-            font-size: 1.2em;
-            color: #333;
-            text-align: center;
-        }
-
-        /* Kiểu cho hiển thị thời gian */
-        .time-date-info {
-            margin-top: 15px;
-            font-size: 1.1em;
-            color: #555;
-            text-align: center;
-        }
-
-        /* Kiểu cho container hình ảnh truyền thống */
-        .traditional-images {
-            display: flex;
-            justify-content: center;
-            gap: 15px; /* Khoảng cách giữa các hình ảnh */
-            margin-top: 30px;
-            flex-wrap: wrap; /* Cho phép xuống dòng trên màn hình nhỏ */
-        }
-        .traditional-images img {
-            width: 100px; /* Kích thước hình ảnh */
-            height: 100px;
-            object-fit: cover; /* Đảm bảo hình ảnh không bị méo */
-            border-radius: 8px; /* Bo tròn góc hình ảnh */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ nhẹ */
-        }
-
-        /* Keyframes cho hiệu ứng quay của spinner */
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .quote-display.fade-in {
+            opacity: 1;
         }
 
         /* Responsive adjustments for smaller screens */
-        @media (max-width: 600px) {
-            .loading-message {
-                font-size: 1em;
+        @media (max-width: 768px) {
+            .quote-display {
+                font-size: 1.8em; /* Thu nhỏ cho máy tính bảng */
+                max-width: 90%;
             }
-            .time-date-info {
-                font-size: 0.9em;
-            }
-            .traditional-images img {
-                width: 80px;
-                height: 80px;
-            }
-            .traditional-images {
-                gap: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .quote-display {
+                font-size: 1.4em; /* Thu nhỏ cho điện thoại */
+                max-width: 95%;
             }
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="loadingOverlay" class="loading-overlay">
-        <div class="loading-spinner"></div>
-        <p class="loading-message">Đang tải ứng dụng...</p>
-        
-        <p id="timeDateDisplay" class="time-date-info"></p>
-
-        <div class="traditional-images">
-            <img src="https://placehold.co/100x100/A0522D/FFFFFF?text=Áo+Dài" alt="Áo Dài truyền thống">
-            <img src="https://placehold.co/100x100/228B22/FFFFFF?text=Nón+Lá" alt="Nón Lá truyền thống">
-            <img src="https://placehold.co/100x100/8B4513/FFFFFF?text=Chùa+Một+Cột" alt="Chùa Một Cột">
-        </div>
+        <div id="quoteDisplay" class="quote-display"></div>
     </div>
 
     <iframe id="mainIframe" src="https://script.google.com/macros/s/AKfycbw5tyF6r1bCdVShuC5gCaKp7PUomYE7GQRZzHRgXojjP5qE-sB0WdOLOkiPSTHAFwzoeA/exec"></iframe>
@@ -155,25 +119,99 @@
         // Lấy tham chiếu đến các phần tử HTML
         const loadingOverlay = document.getElementById('loadingOverlay');
         const mainIframe = document.getElementById('mainIframe');
-        const timeDateDisplay = document.getElementById('timeDateDisplay');
+        const quoteDisplay = document.getElementById('quoteDisplay');
 
-        // Hàm cập nhật thời gian, ngày tháng năm
-        function updateTimeAndDate() {
-            const now = new Date();
-            const time = now.toLocaleTimeString('vi-VN'); // Định dạng giờ Việt Nam
-            const date = now.toLocaleDateString('vi-VN', {
-                weekday: 'long', // Thứ trong tuần
-                day: '2-digit',   // Ngày
-                month: '2-digit', // Tháng
-                year: 'numeric'   // Năm
-            });
-            timeDateDisplay.textContent = `${time}, ${date}`;
+        // Danh sách 20 câu nói hay
+        const quotes = [
+            "Học, học nữa, học mãi. – Lê-nin",
+            "Không thầy đố mày làm nên. – Tục ngữ Việt Nam",
+            "Dân ta phải biết sử ta, cho tường gốc tích nước nhà Việt Nam. – Chủ tịch Hồ Chí Minh",
+            "Một chữ cũng là thầy, nửa chữ cũng là thầy. – Tục ngữ Việt Nam",
+            "Học vấn không có biên giới. – Khuyết danh",
+            "Non sông Việt Nam có trở nên tươi đẹp hay không, dân tộc Việt Nam có bước tới đài vinh quang để sánh vai với các cường quốc năm châu được hay không, chính là nhờ một phần lớn ở công học tập của các em. – Chủ tịch Hồ Chí Minh",
+            "Người thầy trung bình chỉ nói. Người thầy giỏi giải thích. Người thầy xuất chúng chứng minh. Người thầy vĩ đại truyền cảm hứng. – William Arthur Ward",
+            "Đường đi khó không phải vì ngăn sông cách núi, mà vì lòng người ngại núi e sông. – Nguyễn Bá Học",
+            "Yêu Tổ quốc, yêu đồng bào. – Chủ tịch Hồ Chí Minh",
+            "Tri thức là sức mạnh. – Francis Bacon",
+            "Công cha nghĩa mẹ ơn thầy, nghĩa tình non nước công xây đắp bền. – Ca dao Việt Nam",
+            "Sống là phải học, học để biết, học để làm, học để chung sống, học để tự khẳng định mình. – Jacques Delors",
+            "Ai ơi giữ chí cho bền, dù ai xoay hướng đổi nền mặc ai. – Tục ngữ Việt Nam",
+            "Nghề giáo là nghề cao quý nhất trong các nghề cao quý, vì nó sáng tạo ra những con người sáng tạo. – Phạm Văn Đồng",
+            "Học không biết chán, dạy không biết mỏi. – Khổng Tử",
+            "Lòng yêu nước là điểm tựa của mọi ý chí, mọi hành động, mọi sáng kiến, mọi sáng tạo. – V.I. Lê-nin",
+            "Thầy cô không chỉ dạy học trò kiến thức mà còn dạy cả cách làm người. – Khuyết danh",
+            "Đừng bao giờ ngừng học hỏi, bởi cuộc sống không bao giờ ngừng dạy. – Khuyết danh",
+            "Mỗi tấc đất của Tổ quốc là một tấc vàng. – Khuyết danh",
+            "Học hành là việc cả đời, không ai có thể học thay cho ai. – Tục ngữ Việt Nam"
+        ];
+
+        let lastQuoteIndex = -1; // Biến để lưu chỉ số câu nói cuối cùng được hiển thị
+
+        // Hàm tạo màu ngẫu nhiên (dạng hex)
+        function generateRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
         }
 
-        // Cập nhật thời gian ngay lập tức khi tải trang
-        updateTimeAndDate();
-        // Cập nhật thời gian mỗi giây
-        setInterval(updateTimeAndDate, 1000);
+        // Hàm chuyển đổi màu hex sang RGB
+        function hexToRgb(hex) {
+            const bigint = parseInt(hex.slice(1), 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return { r, g, b };
+        }
+
+        // Hàm tính toán độ sáng (luminance) của màu RGB
+        // Dựa trên công thức W3C cho độ sáng tương đối
+        function getLuminance(r, g, b) {
+            const a = [r, g, b].map(v => {
+                v /= 255;
+                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+            });
+            return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+        }
+
+        // Hàm chọn màu chữ tương phản (đen hoặc trắng)
+        function getContrastingTextColor(hexColor) {
+            const { r, g, b } = hexToRgb(hexColor);
+            const luminance = getLuminance(r, g, b);
+            // Ngưỡng độ sáng để quyết định màu chữ (thường là 0.179 hoặc 0.5)
+            // Dùng 0.5 để đảm bảo tương phản tốt hơn cho các màu ngẫu nhiên
+            return luminance > 0.5 ? '#000000' : '#FFFFFF'; // Nếu nền sáng, chữ đen; nếu nền tối, chữ trắng
+        }
+
+        // Hàm hiển thị câu nói tiếp theo với hiệu ứng fade và màu sắc ngẫu nhiên
+        function displayNextQuote() {
+            // Chọn chỉ số câu nói ngẫu nhiên, đảm bảo không lặp lại ngay câu trước
+            let newQuoteIndex;
+            do {
+                newQuoteIndex = Math.floor(Math.random() * quotes.length);
+            } while (newQuoteIndex === lastQuoteIndex && quotes.length > 1); // Đảm bảo có ít nhất 2 câu để tránh lặp
+
+            lastQuoteIndex = newQuoteIndex; // Cập nhật chỉ số câu nói cuối cùng
+
+            const randomBgColor = generateRandomColor(); // Tạo màu nền ngẫu nhiên
+            const contrastingTextColor = getContrastingTextColor(randomBgColor); // Tạo màu chữ tương phản
+
+            quoteDisplay.style.opacity = 0; // Làm mờ câu nói hiện tại
+            
+            setTimeout(() => {
+                loadingOverlay.style.backgroundColor = randomBgColor; // Đặt màu nền mới
+                quoteDisplay.style.color = contrastingTextColor; // Đặt màu chữ mới
+                quoteDisplay.textContent = quotes[newQuoteIndex]; // Đặt nội dung câu nói mới
+                quoteDisplay.style.opacity = 1; // Hiện ra câu nói mới
+            }, 1000); // Chờ 1 giây để hiệu ứng mờ hoàn tất trước khi đổi nội dung và màu sắc
+        }
+
+        // Hiển thị câu nói đầu tiên ngay lập tức
+        displayNextQuote();
+        // Cập nhật câu nói mỗi 7 giây (tăng từ 5 giây)
+        setInterval(displayNextQuote, 7000); // Đổi câu nói và màu sắc mỗi 7 giây
 
         // Lắng nghe sự kiện 'load' của iframe
         // Khi nội dung của iframe tải xong, lớp phủ sẽ ẩn đi
@@ -184,13 +222,12 @@
         });
 
         // Fallback: Đặt một timeout để ẩn lớp phủ nếu sự kiện 'load' của iframe không xảy ra
-        // (Điều này có thể hữu ích trong một số trường hợp hiếm gặp hoặc nếu iframe bị chặn)
         setTimeout(() => {
             if (!loadingOverlay.classList.contains('hidden')) {
                 console.warn("Iframe load event not detected, hiding loading overlay after timeout.");
                 loadingOverlay.classList.add('hidden');
             }
-        }, 10000); // Ẩn sau 10 giây nếu không có sự kiện load từ iframe
+        }, 15000); // Thời gian chờ fallback vẫn là 15 giây
     </script>
 </body>
 </html>
