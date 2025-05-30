@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chào Mừng Đến Với Ứng Dụng</title>
     <style>
-        /* Đảm bảo body chiếm toàn bộ viewport và không có margin/padding */
-        body {
+        /* Đảm bảo html và body chiếm toàn bộ viewport và không có margin/padding */
+        html, body {
+            height: 100%; /* Rất quan trọng để căn giữa theo chiều dọc */
             margin: 0;
             padding: 0;
             overflow: hidden; /* Ngăn cuộn trang chính khi lớp phủ hiển thị */
             font-family: 'Inter', sans-serif; /* Sử dụng font Inter */
             display: flex;
             flex-direction: column;
-            height: 100vh; /* Chiếm toàn bộ chiều cao viewport */
-            background-color: #f3f4f6; /* Màu nền nhẹ mặc định */
+            color: #374151; /* Màu chữ mặc định */
         }
 
         /* Kiểu cho lớp phủ chờ tải trang (Loading Overlay) */
@@ -32,9 +32,10 @@
             justify-content: center; /* Căn giữa theo chiều dọc */
             align-items: center; /* Căn giữa theo chiều ngang */
             z-index: 9999; /* Đảm bảo nằm trên cùng của mọi thứ */
-            padding: 50px;
+            padding: 20px; /* Giảm padding để có thêm không gian cho nội dung, đặc biệt trên mobile */
             box-sizing: border-box;
             text-align: center;
+            overflow-y: auto; /* Cho phép cuộn nếu nội dung (câu nói) quá dài */
         }
         .loading-overlay.hidden {
             opacity: 0;
@@ -48,14 +49,15 @@
             /* Màu chữ sẽ được đặt bằng JavaScript */
             font-style: italic;
             max-width: 90%; /* Giới hạn chiều rộng để dễ đọc */
-            margin: 0 auto;
+            /* margin: 0 auto; đã được xử lý bởi align-items: center của cha */
             opacity: 0; /* Ban đầu ẩn để tạo hiệu ứng fade */
             transition: opacity 1s ease-in-out, color 1.5s ease-in-out; /* Hiệu ứng mờ dần/hiện ra và chuyển màu chữ */
-            display: flex;
+            display: flex; /* Dùng flex để căn giữa nội dung văn bản bên trong */
             align-items: center;
             justify-content: center;
-            height: 100%; /* Chiếm toàn bộ chiều cao của phần tử cha */
+            flex-grow: 1; /* Cho phép quote-display chiếm hết không gian còn lại để căn giữa */
             text-align: center;
+            padding: 10px; /* Padding bên trong quote-display để văn bản không dính sát viền */
         }
         .quote-display.fade-in {
             opacity: 1;
@@ -90,6 +92,23 @@
         }
         .enter-app-button:active {
             transform: translate(-50%, -50%) scale(0.98);
+        }
+
+        /* Thông báo tùy chỉnh ở cuối trang */
+        .custom-message {
+            position: fixed; /* Cố định ở dưới cùng */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f8f8f8; /* Màu xám nhạt hơn cho flat design */
+            color: #4a4a4a; /* Màu chữ đậm hơn cho rõ ràng */
+            padding: 15px;
+            text-align: center;
+            font-size: 0.9em;
+            border-top: 1px solid #e0e0e0; /* Viền mỏng hơn */
+            font-weight: 500;
+            z-index: 9997; /* Đảm bảo nằm trên các nội dung khác nhưng dưới nút vào ứng dụng */
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05); /* Bóng đổ nhẹ phía trên */
         }
 
         /* Responsive adjustments */
