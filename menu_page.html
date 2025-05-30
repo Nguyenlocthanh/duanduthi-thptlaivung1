@@ -18,8 +18,19 @@
             -moz-osx-smoothing: grayscale;
             display: flex;
             flex-direction: column;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2f7 50%, #dbeafe 100%); /* Nền gradient nhẹ */
             color: #374151; /* Màu chữ mặc định */
+
+            /* Hiệu ứng nền động cho toàn bộ body */
+            background: linear-gradient(135deg, #e0f2f7 0%, #cce7f0 25%, #dbeafe 50%, #e0f2f7 75%, #cce7f0 100%);
+            background-size: 400% 400%; /* Kích thước lớn để tạo hiệu ứng di chuyển */
+            animation: gradientAnimation 15s ease infinite; /* Hiệu ứng di chuyển gradient */
+        }
+
+        /* Keyframes cho hiệu ứng nền gradient */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         /* Container chính cho toàn bộ trang */
@@ -62,14 +73,15 @@
 
         /* Kiểu cho thông báo tùy chỉnh ở cuối trang */
         .custom-message {
-            background-color: #e0f2f7; /* Màu xanh nhạt */
-            color: #00796b; /* Màu xanh đậm */
+            background-color: #f8f8f8; /* Màu xám nhạt hơn cho flat design */
+            color: #4a4a4a; /* Màu chữ đậm hơn cho rõ ràng */
             padding: 15px;
             text-align: center;
             font-size: 0.9em;
-            border-top: 2px solid #b2ebf2; /* Thay border-bottom thành border-top */
+            border-top: 1px solid #e0e0e0; /* Viền mỏng hơn */
             font-weight: 500;
             z-index: 10; /* Đảm bảo nằm trên các iframe */
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05); /* Bóng đổ nhẹ phía trên */
         }
 
         /* === Menu Chính (Lớp phủ toàn màn hình) === */
@@ -79,14 +91,14 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.95); /* Nền trắng mờ cho menu */
+            background: rgba(255, 255, 255, 0.98); /* Nền trắng gần như đục cho menu */
             display: flex;
             flex-direction: column;
             justify-content: center; /* Căn giữa theo chiều dọc */
             align-items: center; /* Căn giữa theo chiều ngang */
             z-index: 100; /* Nằm trên cùng */
             transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
-            padding: 2rem; /* Tăng padding tổng thể để có không gian */
+            padding: 1rem; /* Giảm padding tổng thể để có thêm không gian cho nội dung */
             box-sizing: border-box;
             overflow-y: auto; /* Cho phép cuộn nếu nội dung vượt quá chiều cao */
         }
@@ -96,20 +108,33 @@
             pointer-events: none;
         }
 
+        #mainMenuOverlay .container { /* Điều chỉnh container bên trong overlay */
+            flex-grow: 1; /* Cho phép container chiếm hết không gian */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Căn giữa nội dung bên trong container */
+            align-items: center;
+            padding: 1rem; /* Padding bên trong container */
+            width: 100%;
+            max-width: 1000px; /* Tăng max-width để rộng hơn một chút */
+            margin: auto; /* Căn giữa container */
+        }
+
         h1 {
-            font-size: 2.5rem; /* To rõ ràng */
+            font-size: 2.5rem;
             font-weight: 700;
             color: #1f2937;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem; /* Giảm margin-bottom một chút */
             text-align: center;
             line-height: 1.2;
         }
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
-            gap: 1.5rem; /* Khoảng cách giữa các nút */
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
             width: 100%;
-            max-width: 900px; /* Giới hạn chiều rộng grid */
+            max-width: 900px;
+            margin: 0 auto; /* Đảm bảo grid cũng được căn giữa */
         }
         .app-button {
             display: flex;
@@ -117,65 +142,74 @@
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
-            background-color: white;
-            border-radius: 0.75rem; /* Bo tròn góc */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            text-decoration: none; /* Bỏ gạch chân cho thẻ a */
-            color: #1f2937; /* Màu chữ */
+            background-color: #ffffff; /* Nền trắng tinh cho flat design */
+            border-radius: 0.5rem; /* Bo tròn góc ít hơn cho flat */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); /* Bóng đổ nhẹ hơn */
+            text-decoration: none;
+            color: #374151; /* Màu chữ xám đậm */
             font-weight: 600;
-            font-size: 1.125rem; /* Kích thước chữ */
-            transition: all 0.3s ease-in-out;
+            font-size: 1.125rem;
+            transition: all 0.2s ease-in-out; /* Chuyển động nhanh hơn */
             text-align: center;
-            min-height: 150px; /* Chiều cao tối thiểu của nút */
-            cursor: pointer; /* Hiển thị con trỏ là bàn tay */
-            border: none; /* Bỏ viền mặc định của button */
+            min-height: 150px;
+            cursor: pointer;
+            border: none;
         }
         .app-button:hover {
-            transform: translateY(-5px); /* Hiệu ứng nhấc lên */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            background-color: #e0f2f7; /* Màu nền nhẹ khi hover */
+            transform: translateY(-3px); /* Hiệu ứng nhấc lên nhẹ hơn */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Bóng đổ rõ hơn khi hover */
+            background-color: #f0f4f8; /* Màu nền xám nhạt khi hover */
         }
         .app-button:active {
             transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
         .app-button .icon {
-            font-size: 3rem; /* Kích thước icon */
+            font-size: 3rem;
             margin-bottom: 0.75rem;
         }
-        .app-button.active-app-button { /* Kiểu cho nút ứng dụng đang được chọn */
+        .app-button.active-app-button {
             border: 2px solid #3b82f6; /* Viền xanh nổi bật */
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* Hiệu ứng ring */
+        }
+
+        /* Footer của menu overlay */
+        #mainMenuOverlay footer {
+            margin-top: 2rem; /* Khoảng cách với grid */
+            width: 100%;
+            background-color: #f8f8f8; /* Nền footer xám nhạt */
+            border-top: 1px solid #e0e0e0; /* Viền mỏng */
+            padding: 1rem 0; /* Padding cho footer */
         }
 
         /* === Bong bóng chuyển đổi menu (Toggle Button) === */
         #menuToggleButton {
             position: fixed;
-            bottom: 80px; /* Nâng cao hơn để tránh chồng lên thông báo cuối trang */
+            bottom: 20px; /* Đặt lại vị trí gần cuối trang */
             right: 20px;
-            background-color: #f97316; /* Màu cam */
+            background-color: #3b82f6; /* Màu xanh chủ đạo */
             color: white;
             border-radius: 9999px;
-            width: 60px;
-            height: 60px;
+            width: 55px; /* Giảm kích thước một chút */
+            height: 55px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             cursor: pointer;
             transition: all 0.3s ease;
-            z-index: 1001; /* Nằm trên cả menu overlay */
+            z-index: 1001;
             padding: 2px;
             overflow: hidden;
-            border: none; /* Bỏ viền mặc định của button */
+            border: none;
         }
         #menuToggleButton:hover {
-            background-color: #ea580c;
+            background-color: #2563eb; /* Xanh đậm hơn khi hover */
             transform: translateY(-2px);
         }
         #menuToggleButton:active {
             transform: translateY(0);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         }
         #menuToggleButton .bubble-icon {
             width: 100%;
@@ -190,7 +224,7 @@
             .grid-container { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
             .app-button { padding: 1rem; font-size: 1rem; min-height: 120px; }
             .app-button .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
-            #menuToggleButton { width: 50px; height: 50px; bottom: 70px; }
+            #menuToggleButton { width: 50px; height: 50px; bottom: 15px; right: 15px; } /* Điều chỉnh vị trí mobile */
         }
         @media (max-width: 480px) {
             h1 { font-size: 1.75rem; margin-bottom: 1.5rem; }
@@ -208,7 +242,7 @@
                 font-size: 1.8rem; /* Giảm kích thước icon */
                 margin-bottom: 0.3rem; /* Giảm khoảng cách */
             }
-            #menuToggleButton { width: 45px; height: 45px; bottom: 60px; right: 15px; }
+            #menuToggleButton { width: 45px; height: 45px; bottom: 10px; right: 10px; } /* Điều chỉnh vị trí mobile */
         }
     </style>
 </head>
@@ -243,7 +277,11 @@
 
         </div>
 
-        
+        <div class="custom-message">
+            <p>
+                Đây là ứng dụng do nhóm "Lý Ngọc An-Huỳnh Gia Bảo" phát triển.
+            </p>
+        </div>
     </div>
 
     <div id="mainMenuOverlay">
@@ -282,7 +320,831 @@
                 </button>
             </div>
         </div>
-        
+        <footer class="text-center text-xs text-gray-500 py-4 border-t border-gray-300 bg-white w-full mt-auto">
+            <p>© <span id="currentYear"></span> - Ứng dụng đang phát triển dự thi "Huỳnh Gia Bảo - Lý Ngọc An".</p>
+        </footer>
+    </div>
+
+    <button id="menuToggleButton">
+        <img src="https://lh3.googleusercontent.com/pw/AP1GczMrdABpkyuFldP3L22YPavg9YJqbEZI6ytrgoYsfrBwgMh1SsNd6CjLCiBj0XpsdAioQu5hjy5meiQQrhBT6W7USJsc43yNgwl5mD-TfaCXhBxQDlcZuL0rSdRDCXNnTn4z3kBhusFuYbMBqPEEmtg=w500-h500-s-no-gm?authuser=0" alt="Mở/Đóng Menu" class="bubble-icon">
+    </button>
+
+    <script>
+        // Lấy tham chiếu đến các phần tử HTML
+        const mainMenuOverlay = document.getElementById('mainMenuOverlay');
+        const menuToggleButton = document.getElementById('menuToggleButton');
+        const appButtons = document.querySelectorAll('.grid-container .app-button');
+        const appIframes = document.querySelectorAll('.main-app-iframe');
+        const currentYearSpan = document.getElementById('currentYear');
+
+        currentYearSpan.textContent = new Date().getFullYear();
+
+        // Hàm hiển thị một iframe cụ thể và ẩn các iframe khác
+        function showAppIframe(targetIframeId) {
+            appIframes.forEach(iframe => {
+                if (iframe.id === targetIframeId) {
+                    iframe.classList.add('active');
+                } else {
+                    iframe.classList.remove('active');
+                }
+            });
+
+            // Cập nhật trạng thái 'active' cho nút trong menu
+            appButtons.forEach(button => {
+                if (button.dataset.targetIframe === targetIframeId) {
+                    button.classList.add('active-app-button');
+                } else {
+                    button.classList.remove('active-app-button');
+                }
+            });
+
+            mainMenuOverlay.classList.add('hidden'); // Ẩn menu sau khi chọn ứng dụng
+        }
+
+        // Bắt sự kiện click vào các nút ứng dụng trong menu
+        appButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetIframeId = button.dataset.targetIframe;
+                showAppIframe(targetIframeId);
+            });
+        });
+
+        // Bắt sự kiện click vào bong bóng chuyển đổi menu
+        menuToggleButton.addEventListener('click', () => {
+            mainMenuOverlay.classList.toggle('hidden'); // Bật/tắt hiển thị menu
+        });
+
+        // Đóng menu khi click ra ngoài (nếu menu đang mở)
+        document.addEventListener('click', (event) => {
+            const isClickInsideMenu = mainMenuOverlay.contains(event.target);
+            const isClickOnToggleButton = menuToggleButton.contains(event.target);
+
+            // Nếu click không nằm trong menu và không phải nút toggle, và menu đang hiển thị
+            if (!isClickInsideMenu && !isClickOnToggleButton && !mainMenuOverlay.classList.contains('hidden')) {
+                mainMenuOverlay.classList.add('hidden');
+            }
+        });
+
+        // Hiển thị iframe mặc định khi tải trang (ví dụ: appIframe2)
+        // và hiển thị menu chính ban đầu
+        showAppIframe('appIframe2'); // Hiển thị ứng dụng "Khám Phá Sử Việt" ban đầu
+        mainMenuOverlay.classList.remove('hidden'); // Đảm bảo menu hiển thị khi tải trang
+    </script>
+</body>
+</html>
+```
+Tôi hiểu bạn muốn khắc phục vấn đề căn giữa của menu trên `menu_page.html`, đặc biệt là việc phần trên cùng bị cắt và có vẻ lệch trái/phải.
+
+Vấn đề này thường xảy ra khi nội dung bên trong lớp phủ menu (`#mainMenuOverlay`) vượt quá chiều cao của màn hình và cách căn giữa bằng `justify-content: center` không hoạt động hiệu quả khi có `overflow`. Ngoài ra, việc lệch trái/phải có thể do padding hoặc `max-width` chưa được tối ưu.
+
+Để khắc phục, tôi sẽ thực hiện các điều chỉnh sau trong Canvas `menu_page.html - Trang Menu Chính với Iframes`:
+
+1.  **Căn giữa nội dung menu một cách linh hoạt:**
+    * Sử dụng `align-items: center` và `justify-content: center` trên `#mainMenuOverlay` để căn giữa `container` (chứa tiêu đề và lưới nút).
+    * Đảm bảo `container` bên trong `#mainMenuOverlay` có thể co giãn linh hoạt và tự căn giữa.
+    * Điều chỉnh `padding` trên `#mainMenuOverlay` để nó không đẩy nội dung ra ngoài quá nhiều, đặc biệt trên các màn hình nhỏ.
+
+2.  **Đảm bảo cuộn mượt mà:**
+    * Giữ `overflow-y: auto` trên `#mainMenuOverlay` để người dùng có thể cuộn nếu nội dung menu vượt quá chiều cao màn hình.
+
+3.  **Cân bằng trái/phải:**
+    * Kiểm tra lại `max-width` và `margin: auto` trên `.container` và `.grid-container` để đảm bảo chúng được căn giữa ngang chính xác.
+
+Dưới đây là mã HTML/CSS đã được điều chỉnh:
+
+
+```html
+<!DOCTYPE html>
+<html lang="vi" class="h-full bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Ứng Dụng Đa Chức Năng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Đảm bảo html và body chiếm toàn bộ viewport và không có margin/padding */
+        html, body {
+            height: 100%; /* Đảm bảo cả html và body chiếm toàn bộ chiều cao viewport */
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Ngăn cuộn trang chính */
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-smoothing: grayscale;
+            display: flex;
+            flex-direction: column;
+            color: #374151; /* Màu chữ mặc định */
+
+            /* Hiệu ứng nền động cho toàn bộ body */
+            background: linear-gradient(135deg, #e0f2f7 0%, #cce7f0 25%, #dbeafe 50%, #e0f2f7 75%, #cce7f0 100%);
+            background-size: 400% 400%; /* Kích thước lớn để tạo hiệu ứng di chuyển */
+            animation: gradientAnimation 15s ease infinite; /* Hiệu ứng di chuyển gradient */
+        }
+
+        /* Keyframes cho hiệu ứng nền gradient */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Container chính cho toàn bộ trang */
+        #mainContainer {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%; /* Quan trọng để các phần tử con position: absolute hoạt động đúng */
+            position: relative;
+        }
+
+        /* Container cho các iframe ứng dụng */
+        #appContentContainer {
+            position: absolute; /* Chiếm toàn bộ không gian của mainContainer */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex; /* Dùng flex để quản lý các iframe con */
+            z-index: 1; /* Nằm dưới menu */
+        }
+
+        /* Kiểu cho mỗi iframe ứng dụng chính */
+        .main-app-iframe {
+            position: absolute; /* Xếp chồng lên nhau */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            visibility: hidden; /* Ẩn bằng visibility để không ảnh hưởng đến bố cục */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out; /* Hiệu ứng chuyển đổi mượt mà */
+        }
+        .main-app-iframe.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Kiểu cho thông báo tùy chỉnh ở cuối trang */
+        .custom-message {
+            background-color: #f8f8f8; /* Màu xám nhạt hơn cho flat design */
+            color: #4a4a4a; /* Màu chữ đậm hơn cho rõ ràng */
+            padding: 15px;
+            text-align: center;
+            font-size: 0.9em;
+            border-top: 1px solid #e0e0e0; /* Viền mỏng hơn */
+            font-weight: 500;
+            z-index: 10; /* Đảm bảo nằm trên các iframe */
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05); /* Bóng đổ nhẹ phía trên */
+        }
+
+        /* === Menu Chính (Lớp phủ toàn màn hình) === */
+        #mainMenuOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98); /* Nền trắng gần như đục cho menu */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Căn giữa theo chiều dọc */
+            align-items: center; /* Căn giữa theo chiều ngang */
+            z-index: 100; /* Nằm trên cùng */
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+            padding: 1rem; /* Giảm padding tổng thể để có thêm không gian cho nội dung */
+            box-sizing: border-box;
+            overflow-y: auto; /* Cho phép cuộn nếu nội dung vượt quá chiều cao */
+        }
+        #mainMenuOverlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        #mainMenuOverlay .container { /* Điều chỉnh container bên trong overlay */
+            flex-grow: 0; /* Không cho phép container chiếm hết không gian theo chiều dọc */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Căn giữa nội dung bên trong container */
+            align-items: center;
+            padding: 1rem; /* Padding bên trong container */
+            width: 100%;
+            max-width: 1000px; /* Tăng max-width để rộng hơn một chút */
+            margin: auto; /* Căn giữa container */
+            box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước tổng thể */
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 2rem;
+            text-align: center;
+            line-height: 1.2;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto; /* Đảm bảo grid cũng được căn giữa */
+        }
+        .app-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background-color: #ffffff; /* Nền trắng tinh cho flat design */
+            border-radius: 0.5rem; /* Bo tròn góc ít hơn cho flat */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); /* Bóng đổ nhẹ hơn */
+            text-decoration: none; /* Bỏ gạch chân cho thẻ a */
+            color: #374151; /* Màu chữ xám đậm */
+            font-weight: 600;
+            font-size: 1.125rem;
+            transition: all 0.2s ease-in-out; /* Chuyển động nhanh hơn */
+            text-align: center;
+            min-height: 150px;
+            cursor: pointer; /* Hiển thị con trỏ là bàn tay */
+            border: none; /* Bỏ viền mặc định của button */
+        }
+        .app-button:hover {
+            transform: translateY(-3px); /* Hiệu ứng nhấc lên nhẹ hơn */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Bóng đổ rõ hơn khi hover */
+            background-color: #f0f4f8; /* Màu nền xám nhạt khi hover */
+        }
+        .app-button:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        .app-button .icon {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+        }
+        .app-button.active-app-button {
+            border: 2px solid #3b82f6; /* Viền xanh nổi bật */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* Hiệu ứng ring */
+        }
+
+        /* Footer của menu overlay */
+        #mainMenuOverlay footer {
+            margin-top: 2rem; /* Khoảng cách với grid */
+            width: 100%;
+            background-color: #f8f8f8; /* Nền footer xám nhạt */
+            border-top: 1px solid #e0e0e0; /* Viền mỏng */
+            padding: 1rem 0; /* Padding cho footer */
+            box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước tổng thể */
+        }
+
+        /* === Bong bóng chuyển đổi menu (Toggle Button) === */
+        #menuToggleButton {
+            position: fixed;
+            bottom: 20px; /* Đặt lại vị trí gần cuối trang */
+            right: 20px;
+            background-color: #3b82f6; /* Màu xanh chủ đạo */
+            color: white;
+            border-radius: 9999px;
+            width: 55px; /* Giảm kích thước một chút */
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1001;
+            padding: 2px;
+            overflow: hidden;
+            border: none;
+        }
+        #menuToggleButton:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+        }
+        #menuToggleButton:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+        #menuToggleButton .bubble-icon {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 9999px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; margin-bottom: 2rem; }
+            .grid-container { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+            .app-button { padding: 1rem; font-size: 1rem; min-height: 120px; }
+            .app-button .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+            #menuToggleButton { width: 50px; height: 50px; bottom: 15px; right: 15px; } /* Điều chỉnh vị trí mobile */
+        }
+        @media (max-width: 480px) {
+            h1 { font-size: 1.75rem; margin-bottom: 1.5rem; }
+            /* Thay đổi grid-template-columns để hiển thị 2 cột trên điện thoại */
+            .grid-container { 
+                grid-template-columns: repeat(2, 1fr); /* 2 cột trên màn hình nhỏ */
+                gap: 0.75rem;
+            }
+            .app-button { 
+                padding: 0.5rem; /* Giảm padding */
+                font-size: 0.85rem; /* Giảm kích thước chữ */
+                min-height: 90px; /* Giảm chiều cao tối thiểu */
+            }
+            .app-button .icon { 
+                font-size: 1.8rem; /* Giảm kích thước icon */
+                margin-bottom: 0.3rem; /* Giảm khoảng cách */
+            }
+            #menuToggleButton { width: 45px; height: 45px; bottom: 10px; right: 10px; } /* Điều chỉnh vị trí mobile */
+        }
+    </style>
+</head>
+<body>
+    <div id="mainContainer">
+        <div id="appContentContainer">
+            <iframe id="appIframe1" class="main-app-iframe" src="https://script.google.com/macros/s/AKfycbw5tyF6r1bCdVShuC5gCaKp7PUomYE7GQRZzHRgXojjP5qE-sB0WdOLOkiPSTHAFwzoeA/exec"></iframe>
+
+            <iframe id="appIframe2" class="main-app-iframe active" src="https://script.google.com/macros/s/AKfycby_mvqxvmdB7ljk6Ywzw_782Mdad_w3HUCSIhO7Ee8BZfYcdXrY_VYCqltpjOGs9feC/exec"></iframe>
+
+            <iframe id="appIframe3" class="main-app-iframe" src="https://script.google.com/macros/s/AKfycbwQExUP1qsmDZn5lEe5Bd5dLoVzCTFOoWhYtHnsjp_Q_qVL4MdUOmBAR7f1tjCPNQOXsQ/exec"></iframe>
+
+            <iframe id="appIframe4" class="main-app-iframe" src="https://script.google.com/macros/s/AKfycbwnzBdxtExqS-2hJJ5aQiZz1d4hHo4YpnlIMiUQQ-sZnHGQzGpRLq-wZfIhLfIXRjR_/exec"></iframe>
+
+            <iframe id="appIframe5" class="main-app-iframe" src="https://script.google.com/macros/s/AKfycbxIfpS_wOLtG793C7ffGdS1L7E3bwnBfc1W1-BJPTMnwrG9PmQ6FTL3dgdwpKVRkFvx/exec"></iframe>
+
+            <iframe id="appIframe6" class="main-app-iframe" srcdoc="
+                <body style='font-family: Arial, sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f0f0; text-align: center;'>
+                    <h1 style='color: #333;'>Chào Mừng Đến Với Trang Chủ!</h1>
+                    <p style='color: #666; font-size: 1.2em;'>Vui lòng chọn một ứng dụng từ menu hoặc nhấn nút menu để quay lại.</p>
+                    <p style='color: #999; font-size: 0.9em;'>Đây là một trang placeholder.</p>
+                </body>
+            "></iframe>
+
+            <iframe id="appIframe7" class="main-app-iframe" src="https://script.google.com/macros/s/AKfycbw9sejTq7pns5tEn84A2A9P6bz7nT03SMNm0GYCMHTtFPlJXT1w9liAaWzdEyjbg2hhRw/exec"></iframe>
+
+            <iframe id="appIframe8" class="main-app-iframe" src="llm_math_assistant.html"></iframe>
+
+            <iframe id="appIframe9" class="main-app-iframe" src="https://www.wikipedia.org/"></iframe>
+
+            <iframe id="appIframe10" class="main-app-iframe" src="https://www.google.com/"></iframe>
+
+        </div>
+
+        <div class="custom-message">
+            <p>
+                Đây là ứng dụng do nhóm "Lý Ngọc An-Huỳnh Gia Bảo" phát triển.
+            </p>
+        </div>
+    </div>
+
+    <div id="mainMenuOverlay">
+        <div class="container">
+            <h1>Chọn Ứng Dụng Của Bạn</h1>
+            <div class="grid-container">
+                <button data-target-iframe="appIframe6" class="app-button">
+                    <span class="icon">🏠</span> Trang Chủ
+                </button>
+                <button data-target-iframe="appIframe1" class="app-button">
+                    <span class="icon">➕</span> Ứng Dụng Giải Toán
+                </button>
+                <button data-target-iframe="appIframe2" class="app-button active-app-button">
+                    <span class="icon">📚</span> Khám Phá Sử Việt
+                </button>
+                <button data-target-iframe="appIframe3" class="app-button">
+                    <span class="icon">📜</span> Góc Lịch Sử
+                </button>
+                <button data-target-iframe="appIframe4" class="app-button">
+                    <span class="icon">🧠</span> Giải Toán Thông Minh
+                </button>
+                <button data-target-iframe="appIframe5" class="app-button">
+                    <span class="icon">🎮</span> Trò Chơi Toán Học
+                </button>
+                <button data-target-iframe="appIframe7" class="app-button">
+                    <span class="icon">📝</span> Tạo Đề Ôn Tập
+                </button>
+                <button data-target-iframe="appIframe8" class="app-button">
+                    <span class="icon">🤖</span> Trợ Lý AI
+                </button>
+                <button data-target-iframe="appIframe9" class="app-button">
+                    <span class="icon">🌐</span> Wikipedia
+                </button>
+                <button data-target-iframe="appIframe10" class="app-button">
+                    <span class="icon">🔍</span> Google (có thể lỗi)
+                </button>
+            </div>
+        </div>
+        <footer class="text-center text-xs text-gray-500 py-4 border-t border-gray-300 bg-white w-full mt-auto">
+            <p>© <span id="currentYear"></span> - Ứng dụng đang phát triển dự thi "Huỳnh Gia Bảo - Lý Ngọc An".</p>
+        </footer>
+    </div>
+
+    <button id="menuToggleButton">
+        <img src="https://lh3.googleusercontent.com/pw/AP1GczMrdABpkyuFldP3L22YPavg9YJqbEZI6ytrgoYsfrBwgMh1SsNd6CjLCiBj0XpsdAioQu5hjy5meiQQrhBT6W7USJsc43yNgwl5mD-TfaCXhBxQDlcZuL0rSdRDCXNnTn4z3kBhusFuYbMBqPEEmtg=w500-h500-s-no-gm?authuser=0" alt="Mở/Đóng Menu" class="bubble-icon">
+    </button>
+
+    <script>
+        // Lấy tham chiếu đến các phần tử HTML
+        const mainMenuOverlay = document.getElementById('mainMenuOverlay');
+        const menuToggleButton = document.getElementById('menuToggleButton');
+        const appButtons = document.querySelectorAll('.grid-container .app-button');
+        const appIframes = document.querySelectorAll('.main-app-iframe');
+        const currentYearSpan = document.getElementById('currentYear');
+
+        currentYearSpan.textContent = new Date().getFullYear();
+
+        // Hàm hiển thị một iframe cụ thể và ẩn các iframe khác
+        function showAppIframe(targetIframeId) {
+            appIframes.forEach(iframe => {
+                if (iframe.id === targetIframeId) {
+                    iframe.classList.add('active');
+                } else {
+                    iframe.classList.remove('active');
+                }
+            });
+
+            // Cập nhật trạng thái 'active' cho nút trong menu
+            appButtons.forEach(button => {
+                if (button.dataset.targetIframe === targetIframeId) {
+                    button.classList.add('active-app-button');
+                } else {
+                    button.classList.remove('active-app-button');
+                }
+            });
+
+            mainMenuOverlay.classList.add('hidden'); // Ẩn menu sau khi chọn ứng dụng
+        }
+
+        // Bắt sự kiện click vào các nút ứng dụng trong menu
+        appButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetIframeId = button.dataset.targetIframe;
+                showAppIframe(targetIframeId);
+            });
+        });
+
+        // Bắt sự kiện click vào bong bóng chuyển đổi menu
+        menuToggleButton.addEventListener('click', () => {
+            mainMenuOverlay.classList.toggle('hidden'); // Bật/tắt hiển thị menu
+        });
+
+        // Đóng menu khi click ra ngoài (nếu menu đang mở)
+        document.addEventListener('click', (event) => {
+            const isClickInsideMenu = mainMenuOverlay.contains(event.target);
+            const isClickOnToggleButton = menuToggleButton.contains(event.target);
+
+            // Nếu click không nằm trong menu và không phải nút toggle, và menu đang hiển thị
+            if (!isClickInsideMenu && !isClickOnToggleButton && !mainMenuOverlay.classList.contains('hidden')) {
+                mainMenuOverlay.classList.add('hidden');
+            }
+        });
+
+        // Hiển thị iframe mặc định khi tải trang (ví dụ: appIframe2)
+        // và hiển thị menu chính ban đầu
+        showAppIframe('appIframe2'); // Hiển thị ứng dụng "Khám Phá Sử Việt" ban đầu
+        mainMenuOverlay.classList.remove('hidden'); // Đảm bảo menu hiển thị khi tải trang
+    </script>
+</body>
+</html>
+```
+Bạn đã chỉ ra rằng menu trên `menu_page.html` vẫn chưa hiển thị hoàn toàn ở giữa, đặc biệt là phần trên cùng bị cắt và có vẻ lệch trái/phải.
+
+Vấn đề này thường do sự kết hợp của `position: absolute` và `overflow-y: auto` khi nội dung vượt quá chiều cao màn hình, cùng với cách căn giữa bằng `justify-content: center` không hoạt động tối ưu trong mọi trường hợp.
+
+Để khắc phục, tôi sẽ điều chỉnh lại cách căn giữa cho `mainMenuOverlay` và `container` bên trong nó, sử dụng một kỹ thuật flexbox linh hoạt hơn để đảm bảo nội dung menu luôn được căn giữa theo cả chiều dọc và chiều ngang, đồng thời vẫn cho phép cuộn khi cần.
+
+Dưới đây là mã HTML/CSS đã được chỉnh sửa trong Canvas `menu_page.html - Trang Menu Chính với Iframes`:
+
+
+```html
+<!DOCTYPE html>
+<html lang="vi" class="h-full bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Ứng Dụng Đa Chức Năng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Đảm bảo html và body chiếm toàn bộ viewport và không có margin/padding */
+        html, body {
+            height: 100%; /* Đảm bảo cả html và body chiếm toàn bộ chiều cao viewport */
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Ngăn cuộn trang chính */
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-smoothing: grayscale;
+            display: flex;
+            flex-direction: column;
+            color: #374151; /* Màu chữ mặc định */
+
+            /* Hiệu ứng nền động cho toàn bộ body */
+            background: linear-gradient(135deg, #e0f2f7 0%, #cce7f0 25%, #dbeafe 50%, #e0f2f7 75%, #cce7f0 100%);
+            background-size: 400% 400%; /* Kích thước lớn để tạo hiệu ứng di chuyển */
+            animation: gradientAnimation 15s ease infinite; /* Hiệu ứng di chuyển gradient */
+        }
+
+        /* Keyframes cho hiệu ứng nền gradient */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Container chính cho toàn bộ trang */
+        #mainContainer {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%; /* Quan trọng để các phần tử con position: absolute hoạt động đúng */
+            position: relative;
+        }
+
+        /* Container cho các iframe ứng dụng */
+        #appContentContainer {
+            position: absolute; /* Chiếm toàn bộ không gian của mainContainer */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex; /* Dùng flex để quản lý các iframe con */
+            z-index: 1; /* Nằm dưới menu */
+        }
+
+        /* Kiểu cho mỗi iframe ứng dụng chính */
+        .main-app-iframe {
+            position: absolute; /* Xếp chồng lên nhau */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            visibility: hidden; /* Ẩn bằng visibility để không ảnh hưởng đến bố cục */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out; /* Hiệu ứng chuyển đổi mượt mà */
+        }
+        .main-app-iframe.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Kiểu cho thông báo tùy chỉnh ở cuối trang */
+        .custom-message {
+            background-color: #f8f8f8; /* Màu xám nhạt hơn cho flat design */
+            color: #4a4a4a; /* Màu chữ đậm hơn cho rõ ràng */
+            padding: 15px;
+            text-align: center;
+            font-size: 0.9em;
+            border-top: 1px solid #e0e0e0; /* Viền mỏng hơn */
+            font-weight: 500;
+            z-index: 10; /* Đảm bảo nằm trên các iframe */
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05); /* Bóng đổ nhẹ phía trên */
+        }
+
+        /* === Menu Chính (Lớp phủ toàn màn hình) === */
+        #mainMenuOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98); /* Nền trắng gần như đục cho menu */
+            display: flex;
+            flex-direction: column;
+            /* Thay đổi căn giữa để linh hoạt hơn */
+            justify-content: center; 
+            align-items: center; 
+            z-index: 100; /* Nằm trên cùng */
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+            padding: 1rem; /* Giảm padding tổng thể để có thêm không gian cho nội dung */
+            box-sizing: border-box;
+            overflow-y: auto; /* Cho phép cuộn nếu nội dung vượt quá chiều cao */
+        }
+        #mainMenuOverlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        #mainMenuOverlay .container { /* Điều chỉnh container bên trong overlay */
+            flex-grow: 0; /* Không cho phép container chiếm hết không gian theo chiều dọc */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Căn giữa nội dung bên trong container */
+            align-items: center;
+            padding: 1rem; /* Padding bên trong container */
+            width: 100%;
+            max-width: 1000px; /* Tăng max-width để rộng hơn một chút */
+            margin: auto; /* Căn giữa container */
+            box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước tổng thể */
+            /* Thêm min-height để đảm bảo container có đủ không gian khi nội dung ít */
+            min-height: fit-content; 
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 2rem;
+            text-align: center;
+            line-height: 1.2;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto; /* Đảm bảo grid cũng được căn giữa */
+        }
+        .app-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background-color: #ffffff; /* Nền trắng tinh cho flat design */
+            border-radius: 0.5rem; /* Bo tròn góc ít hơn cho flat */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); /* Bóng đổ nhẹ hơn */
+            text-decoration: none; /* Bỏ gạch chân cho thẻ a */
+            color: #374151; /* Màu chữ xám đậm */
+            font-weight: 600;
+            font-size: 1.125rem;
+            transition: all 0.2s ease-in-out; /* Chuyển động nhanh hơn */
+            text-align: center;
+            min-height: 150px;
+            cursor: pointer; /* Hiển thị con trỏ là bàn tay */
+            border: none; /* Bỏ viền mặc định của button */
+        }
+        .app-button:hover {
+            transform: translateY(-3px); /* Hiệu ứng nhấc lên nhẹ hơn */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Bóng đổ rõ hơn khi hover */
+            background-color: #f0f4f8; /* Màu nền xám nhạt khi hover */
+        }
+        .app-button:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        .app-button .icon {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+        }
+        .app-button.active-app-button {
+            border: 2px solid #3b82f6; /* Viền xanh nổi bật */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* Hiệu ứng ring */
+        }
+
+        /* Footer của menu overlay */
+        #mainMenuOverlay footer {
+            margin-top: 2rem; /* Khoảng cách với grid */
+            width: 100%;
+            background-color: #f8f8f8; /* Nền footer xám nhạt */
+            border-top: 1px solid #e0e0e0; /* Viền mỏng */
+            padding: 1rem 0; /* Padding cho footer */
+            box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước tổng thể */
+        }
+
+        /* === Bong bóng chuyển đổi menu (Toggle Button) === */
+        #menuToggleButton {
+            position: fixed;
+            bottom: 20px; /* Đặt lại vị trí gần cuối trang */
+            right: 20px;
+            background-color: #3b82f6; /* Màu xanh chủ đạo */
+            color: white;
+            border-radius: 9999px;
+            width: 55px; /* Giảm kích thước một chút */
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1001;
+            padding: 2px;
+            overflow: hidden;
+            border: none;
+        }
+        #menuToggleButton:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+        }
+        #menuToggleButton:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+        #menuToggleButton .bubble-icon {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 9999px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; margin-bottom: 2rem; }
+            .grid-container { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+            .app-button { padding: 1rem; font-size: 1rem; min-height: 120px; }
+            .app-button .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+            #menuToggleButton { width: 50px; height: 50px; bottom: 15px; right: 15px; } /* Điều chỉnh vị trí mobile */
+        }
+        @media (max-width: 480px) {
+            h1 { font-size: 1.75rem; margin-bottom: 1.5rem; }
+            /* Thay đổi grid-template-columns để hiển thị 2 cột trên điện thoại */
+            .grid-container { 
+                grid-template-columns: repeat(2, 1fr); /* 2 cột trên màn hình nhỏ */
+                gap: 0.75rem;
+            }
+            .app-button { 
+                padding: 0.5rem; /* Giảm padding */
+                font-size: 0.85rem; /* Giảm kích thước chữ */
+                min-height: 90px; /* Giảm chiều cao tối thiểu */
+            }
+            .app-button .icon { 
+                font-size: 1.8rem; /* Giảm kích thước icon */
+                margin-bottom: 0.3rem; /* Giảm khoảng cách */
+            }
+            #menuToggleButton { width: 45px; height: 45px; bottom: 10px; right: 10px; } /* Điều chỉnh vị trí mobile */
+        }
+    </style>
+</head>
+<body>
+    <div id="mainContainer">
+        <div id="appContentContainer">
+            <iframe id="appIframe1" class="main-app-iframe" src="https://script.google.com/macros/s/AKfycbw5tyF6r1bCdVShuC5gCaKp7PUomYE7GQRZzHRgXojjP5qE-sB0WdOLOkiPSTHAFwzoeA/exec"></iframe>
+
+            <iframe id="appIframe2" class="main-app-iframe active" src="https://script.google.com/macros/s/AKfycby_mvqxvmdB7ljk6Ywzw_782Mdad_w3HUCSIhO7Ee8BZfYcdXrY_VYCqltpjOGs9feC/exec"></iframe>
+
+            <iframe id="appIframe3" class="main-app-iframe" src="https://script.google.com/macros/s/AKfycbwQExUP1qsmDZn5lEe5Bd5dLoVzCTFOoWhYtHnsjp_Q_qVL4MdUOmBAR7f1tjCPNQOXsQ/exec"></iframe>
+
+            <iframe id="appIframe4" class="main-app-iframe" src="https://script.google.com/macros/s/AKfycbwnzBdxtExqS-2hJJ5aQiZz1d4hHo4YpnlIMiUQQ-sZnHGQzGpRLq-wZfIhLfIXRjQ_/exec"></iframe>
+
+            <iframe id="appIframe5" class="main-app-iframe" src="https://script.google.com/macros/s/AKfycbxIfpS_wOLtG793C7ffGdS1L7E3bwnBfc1W1-BJPTMnwrG9PmQ6FTL3dgdwpKVRkFvx/exec"></iframe>
+
+            <iframe id="appIframe6" class="main-app-iframe" srcdoc="
+                <body style='font-family: Arial, sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f0f0; text-align: center;'>
+                    <h1 style='color: #333;'>Chào Mừng Đến Với Trang Chủ!</h1>
+                    <p style='color: #666; font-size: 1.2em;'>Vui lòng chọn một ứng dụng từ menu hoặc nhấn nút menu để quay lại.</p>
+                    <p style='color: #999; font-size: 0.9em;'>Đây là một trang placeholder.</p>
+                </body>
+            "></iframe>
+
+            <iframe id="appIframe7" class="main-app-iframe" src="https://script.google.com/macros/s/AKfycbw9sejTq7pns5tEn84A2A9P6bz7nT03SMNm0GYCMHTtFPlJXT1w9liAaWzdEyjbg2hhRw/exec"></iframe>
+
+            <iframe id="appIframe8" class="main-app-iframe" src="llm_math_assistant.html"></iframe>
+
+            <iframe id="appIframe9" class="main-app-iframe" src="https://www.wikipedia.org/"></iframe>
+
+            <iframe id="appIframe10" class="main-app-iframe" src="https://www.google.com/"></iframe>
+
+        </div>
+
+      
+    </div>
+
+    <div id="mainMenuOverlay">
+        <div class="container">
+            <h1>Chọn Ứng Dụng Của Bạn</h1>
+            <div class="grid-container">
+                <button data-target-iframe="appIframe6" class="app-button">
+                    <span class="icon">🏠</span> Trang Chủ
+                </button>
+                <button data-target-iframe="appIframe1" class="app-button">
+                    <span class="icon">➕</span> Ứng Dụng Giải Toán
+                </button>
+                <button data-target-iframe="appIframe2" class="app-button active-app-button">
+                    <span class="icon">📚</span> Khám Phá Sử Việt
+                </button>
+                <button data-target-iframe="appIframe3" class="app-button">
+                    <span class="icon">📜</span> Góc Lịch Sử
+                </button>
+                <button data-target-iframe="appIframe4" class="app-button">
+                    <span class="icon">🧠</span> Giải Toán Thông Minh
+                </button>
+                <button data-target-iframe="appIframe5" class="app-button">
+                    <span class="icon">🎮</span> Trò Chơi Toán Học
+                </button>
+                <button data-target-iframe="appIframe7" class="app-button">
+                    <span class="icon">📝</span> Tạo Đề Ôn Tập
+                </button>
+                <button data-target-iframe="appIframe8" class="app-button">
+                    <span class="icon">🤖</span> Trợ Lý AI
+                </button>
+                <button data-target-iframe="appIframe9" class="app-button">
+                    <span class="icon">🌐</span> Wikipedia
+                </button>
+                <button data-target-iframe="appIframe10" class="app-button">
+                    <span class="icon">🔍</span> Google (có thể lỗi)
+                </button>
+            </div>
+        </div>
+       
     </div>
 
     <button id="menuToggleButton">
