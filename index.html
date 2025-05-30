@@ -1,130 +1,40 @@
 <!DOCTYPE html>
-<html lang="vi" class="h-full bg-gray-100">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bong Bóng Chat & Menu</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Ứng dụng Giải Toán & Trắc Nghiệm - Nhúng trên GitHub Pages</title>
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        /* Style cho bong bóng chat */
-        .chat-bubble-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #3b82f6; /* Blue 500 */
-            color: white;
-            border-radius: 9999px; /* Tròn hoàn hảo */
-            width: 60px;
-            height: 60px;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Ngăn cuộn trang chính nếu iframe chiếm toàn màn hình */
+            font-family: sans-serif;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem; /* Kích thước icon */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 1000; /* Đảm bảo nằm trên cùng */
+            flex-direction: column;
+            height: 100vh;
         }
-        .chat-bubble-btn:hover {
-            background-color: #2563eb; /* Blue 600 */
-            transform: translateY(-2px);
+        iframe {
+            width: 100%;
+            flex-grow: 1; /* Cho phép iframe chiếm hết không gian còn lại */
+            border: none;
         }
-        .chat-bubble-btn:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Style cho menu tùy chọn */
-        .options-menu {
-            position: fixed;
-            bottom: 90px; /* Vị trí trên bong bóng chat */
-            right: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            padding: 10px 0;
-            width: 200px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
-            z-index: 999;
-        }
-        .options-menu.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        .options-menu a {
-            display: block;
-            padding: 10px 15px;
-            color: #333;
-            text-decoration: none;
-            transition: background-color 0.2s ease;
-            font-size: 0.9rem;
-        }
-        .options-menu a:hover {
-            background-color: #f0f0f0;
+        .header-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9em;
+            border-bottom: 1px solid #f5c6cb;
         }
     </style>
 </head>
-<body class="flex flex-col min-h-screen">
-    <header class="bg-gray-800 text-white p-4 text-center">
-        <h1 class="text-xl font-bold">Trang web của bạn</h1>
-    </header>
-
-    <main class="flex-grow p-4">
-        <p>Nội dung chính của trang web.</p>
-        <p>Cuộn xuống để xem bong bóng chat.</p>
-        <div class="h-96 bg-gray-200 flex items-center justify-center">
-            <p>Nội dung kéo dài</p>
-        </div>
-        <div class="h-96 bg-gray-300 flex items-center justify-center">
-            <p>Thêm nội dung</p>
-        </div>
-    </main>
-
-    <div id="chatBubble" class="chat-bubble-btn">
-        💬
+<body>
+    <div class="header-message">
+        <p>Đây là trang GitHub Pages của bạn. Ứng dụng Google Apps Script được nhúng bên dưới.</p>
+        <p>Để có trải nghiệm tốt nhất, bạn nên truy cập trực tiếp <a href="https://script.google.com/macros/s/AKfycbw5tyF6r1bCdVShuC5gCaKp7PUomYE7GQRZzHRgXojjP5qE-sB0WdOLOkiPSTHAFwzoeA/exec" target="_blank" style="color: #721c24; font-weight: bold;">tại đây</a>.</p>
     </div>
 
-    <div id="optionsMenu" class="options-menu">
-        <a href="#link1">Liên kết 1</a>
-        <a href="#link2">Liên kết 2</a>
-        <a href="#link3">Liên kết 3</a>
-        <a href="mailto:your_email@example.com">Gửi Email</a>
-        <a href="tel:+84123456789">Gọi điện</a>
-    </div>
-
-    <footer class="bg-gray-800 text-white p-4 text-center text-sm">
-        &copy; 2025 Trang web của bạn
-    </footer>
-
-    <script>
-        const chatBubble = document.getElementById('chatBubble');
-        const optionsMenu = document.getElementById('optionsMenu');
-
-        // Bắt sự kiện click vào bong bóng chat
-        chatBubble.addEventListener('click', () => {
-            optionsMenu.classList.toggle('active'); // Thêm/bỏ class 'active' để hiện/ẩn menu
-        });
-
-        // Bắt sự kiện click bên ngoài menu để đóng menu
-        document.addEventListener('click', (event) => {
-            // Kiểm tra xem click có nằm trong bong bóng chat hoặc menu không
-            const isClickInsideBubble = chatBubble.contains(event.target);
-            const isClickInsideMenu = optionsMenu.contains(event.target);
-
-            // Nếu click không nằm trong cả hai, và menu đang hoạt động, thì đóng menu
-            if (!isClickInsideBubble && !isClickInsideMenu && optionsMenu.classList.contains('active')) {
-                optionsMenu.classList.remove('active');
-            }
-        });
-    </script>
+    <iframe src="https://script.google.com/macros/s/AKfycbw5tyF6r1bCdVShuC5gCaKp7PUomYE7GQRZzHRgXojjP5qE-sB0WdOLOkiPSTHAFwzoeA/exec"></iframe>
 </body>
 </html>
